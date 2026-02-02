@@ -1,29 +1,21 @@
 package config
 
 type BaseConfig struct {
-	Server   ServerConfig   `toml:"SERVER"`
-	Database DataBaseConfig `toml:"DATABASE"`
-	Jwt      JwtConfig      `toml:"JWT"`
-	Logger   Logger         `toml:"LOGGER"`
+	Server   ServerConfig   `mapstructure:"SERVER"`
+	Database DataBaseConfig `mapstructure:"DATABASE"`
+	Jwt      JwtConfig      `mapstructure:"JWT"`
 }
 type ServerConfig struct {
-	Addr string `toml:"addr"`
+	Addr string `mapstructure:"addr"`
+	Mode string `mapstructure:"mode"`
 }
 
 type DataBaseConfig struct {
-	Host string `toml:"host"`
-	Port string `toml:"port"`
-	User string `toml:"user"`
-	Pwd  string `toml:"pwd"`
-	Name string `toml:"name"`
+	Dns  string `mapstructure:"dns"`
+	Type string `mapstructure:"type"`
 }
 
 type JwtConfig struct {
-	Secret string `toml:"secret"`
-	Expire int64  `toml:"expire"`
-}
-
-type Logger struct {
-	Level string `toml:"level"`
-	Path  string `toml:"path"`
+	Secret string `mapstructure:"secret"`
+	Expire int64  `mapstructure:"expire"`
 }

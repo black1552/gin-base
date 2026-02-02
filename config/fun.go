@@ -7,6 +7,7 @@ import (
 
 	"git.magicany.cc/black1552/gin-base/log"
 	"git.magicany.cc/black1552/gin-base/utils"
+	"github.com/fsnotify/fsnotify"
 	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/os/gfile"
 	"github.com/spf13/viper"
@@ -35,22 +36,29 @@ func init() {
 			return
 		}
 		log.Info("配置文件是否为空", utils.EmptyFile(configPath))
-		setDefault()
+		SetDefault()
 		err = viper.WriteConfig()
 		if err != nil {
 			log.Error("保存配置文件失败: ", err)
 			return
 		}
+	} else {
+		err = viper.ReadInConfig()
+		if err != nil {
+			log.Error("读取配置文件失败: ", err)
+			return
+		}
 	}
+	viper.OnConfigChange(func(in fsnotify.Event) {
+		log.Info("配置文件已修改")
+	})
 }
 
-func setDefault() {
+func SetDefault() {
 	viper.Set("SERVER.addr", "127.0.0.1:8080")
-	viper.Set("DATABASE.host", "127.0.0.1")
-	viper.Set("DATABASE.port", 3306)
-	viper.Set("DATABASE.username", "root")
-	viper.Set("DATABASE.password", "")
-	viper.Set("DATABASE.name", "")
+	viper.Set("SERVER.mode", "release")
+	viper.Set("DATABASE.type", "mysql")
+	viper.Set("DATABASE.dns", "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local")
 	viper.Set("JWT.secret", "SET-YOUR-SECRET")
 	viper.Set("JWT.expire", 86400)
 }
@@ -88,18 +96,16 @@ func SetConfigMap(value map[string]any) error {
 }
 
 func GetConfigValue(key string, def ...any) *gvar.Var {
-	va := gvar.New(viper.Get(key))
-	if va.IsEmpty() && len(def) > 0 {
+	value := gvar.New(viper.Get(key))
+	if value.IsEmpty() && len(def) > 0 {
 		return gvar.New(def[0])
 	}
-	return va
+	return value
 }
-func Unmarshal(s any) (any, error) {
-	err := viper.Unmarshal(s)
-	if err != nil {
-		return nil, err
-	}
-	return s, nil
+func Unmarshal[T any]() (*T, error) {
+	var s T
+	err := viper.Unmarshal(&s)
+	return &s, err
 }
 
 func GetAllConfig() map[string]any {
