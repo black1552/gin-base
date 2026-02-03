@@ -287,7 +287,7 @@ func (c Curd[R]) ClearFieldOne(ctx ctx, req any, delField []string, where any, o
 	err = db.Where(filterMap).First(item).Error
 	// 处理记录不存在的情况（GORM会返回ErrRecordNotFound）
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
+		panic("未找到数据")
 	}
 	return
 }
@@ -311,7 +311,7 @@ func (c Curd[R]) Value(ctx ctx, where any, field any) (interface{}, error) {
 	// 执行查询（取第一条记录的指定字段）
 	err := db.First(&result).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
+		panic("未找到数据")
 	}
 	return result, err
 }
@@ -322,7 +322,7 @@ func (c Curd[R]) DeletePri(ctx ctx, primaryKey any) error {
 	// 按主键字段构建查询
 	pk := c.Dao.PrimaryKey()
 	if pk == "" {
-		return errors.New("主键字段未配置")
+		panic("主键字段未配置")
 	}
 	return db.Where(fmt.Sprintf("%s = ?", pk), primaryKey).Delete(new(R)).Error
 }
@@ -333,18 +333,21 @@ func (c Curd[R]) DeleteWhere(ctx ctx, where any) error {
 }
 
 // Sum -------------------------- 原Sum对应实现：字段求和 --------------------------
-func (c Curd[R]) Sum(ctx ctx, where any, field string) (float64, error) {
+func (c Curd[R]) Sum(ctx ctx, where any, field string) float64 {
 	var sum float64
 	if field == "" {
-		return 0, errors.New("求和字段不能为空")
+		panic("求和字段不能为空")
 	}
 
 	err := c.Dao.Ctx(ctx).Model(new(R)).Where(where).Select(fmt.Sprintf("SUM(%s) as sum", field)).Scan(&sum).Error
-	return sum, err
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		panic("未找到数据")
+	}
+	return sum
 }
 
 // ArrayField -------------------------- 原ArrayField对应实现：查询指定字段数组 --------------------------
-func (c Curd[R]) ArrayField(ctx ctx, where any, field any) ([]interface{}, error) {
+func (c Curd[R]) ArrayField(ctx ctx, where any, field any) []interface{} {
 	var result []interface{}
 	db := c.Dao.Ctx(ctx).Model(new(R)).Where(where)
 
@@ -361,32 +364,35 @@ func (c Curd[R]) ArrayField(ctx ctx, where any, field any) ([]interface{}, error
 
 	// 执行查询
 	err := db.Find(&result).Error
-	return result, err
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		panic("未找到数据")
+	}
+	return result
 }
 
 // FindPri -------------------------- 原FindPri对应实现：按主键查询单条记录 --------------------------
-func (c Curd[R]) FindPri(ctx ctx, primaryKey any, with bool) (model *R, err error) {
+func (c Curd[R]) FindPri(ctx ctx, primaryKey any, with bool) (model *R) {
 	model = new(R)
 	db := c.Dao.Ctx(ctx).Model(model)
 	pk := c.Dao.PrimaryKey()
 
 	if pk == "" {
-		return nil, errors.New("主键字段未配置")
+		panic("主键字段未配置")
 	}
 	if with {
 		db = db.Preload("*")
 	}
 
 	// 按主键查询
-	err = db.Where(fmt.Sprintf("%s = ?", pk), primaryKey).First(model).Error
+	err := db.Where(fmt.Sprintf("%s = ?", pk), primaryKey).First(model).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
+		panic("未找到数据")
 	}
 	return
 }
 
 // -------------------------- 原First对应实现：按条件查询第一条记录 --------------------------
-func (c Curd[R]) First(ctx ctx, where any, order any, with bool) (model *R, err error) {
+func (c Curd[R]) First(ctx ctx, where any, order any, with bool) (model *R) {
 	model = new(R)
 	db := c.Dao.Ctx(ctx).Model(model)
 
@@ -400,25 +406,25 @@ func (c Curd[R]) First(ctx ctx, where any, order any, with bool) (model *R, err 
 		db = db.Order(order)
 	}
 
-	err = db.First(model).Error
+	err := db.First(model).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
+		panic("未找到数据")
 	}
 	return
 }
 
 // -------------------------- 原Exists对应实现：判断记录是否存在 --------------------------
-func (c Curd[R]) Exists(ctx ctx, where any) (exists bool, err error) {
+func (c Curd[R]) Exists(ctx ctx, where any) (exists bool) {
 	var count int64
-	err = c.Dao.Ctx(ctx).Model(new(R)).Where(where).Count(&count).Error
+	err := c.Dao.Ctx(ctx).Model(new(R)).Where(where).Count(&count).Error
 	if err != nil {
-		return false, err
+		panic(fmt.Sprintf("Exists查询错误: %v", err))
 	}
-	return count > 0, nil
+	return count > 0
 }
 
 // -------------------------- 原All对应实现：查询所有符合条件的记录 --------------------------
-func (c Curd[R]) All(ctx ctx, where any, order any, with bool) (items []*R, err error) {
+func (c Curd[R]) All(ctx ctx, where any, order any, with bool) (items []*R) {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 
 	if with {
@@ -431,42 +437,57 @@ func (c Curd[R]) All(ctx ctx, where any, order any, with bool) (items []*R, err 
 		db = db.Order(order)
 	}
 
-	err = db.Find(&items).Error
+	err := db.Find(&items).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		panic(fmt.Sprintf("All查询错误: %v", err))
+	}
 	return
 }
 
 // -------------------------- 原Count对应实现：统计记录总数 --------------------------
-func (c Curd[R]) Count(ctx ctx, where any) (count int64, err error) {
-	err = c.Dao.Ctx(ctx).Model(new(R)).Where(where).Count(&count).Error
+func (c Curd[R]) Count(ctx ctx, where any) (count int64) {
+	err := c.Dao.Ctx(ctx).Model(new(R)).Where(where).Count(&count).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		panic(fmt.Sprintf("Count查询错误: %v", err))
+	}
 	return
 }
 
 // -------------------------- 原Save对应实现：新增/更新记录（对应GORM的Save） --------------------------
-func (c Curd[R]) Save(ctx ctx, data any) (err error) {
-	return c.Dao.Ctx(ctx).Model(new(R)).Save(data).Error
+func (c Curd[R]) Save(ctx ctx, data any) {
+	err := c.Dao.Ctx(ctx).Model(new(R)).Save(data).Error
+	if err != nil {
+		panic(fmt.Sprintf("Save保存错误: %v", err))
+	}
 }
 
 // -------------------------- 原Update对应实现：按条件更新记录 --------------------------
-func (c Curd[R]) Update(ctx ctx, where any, data any) (count int64, err error) {
+func (c Curd[R]) Update(ctx ctx, where any, data any) (count int64) {
 	result := c.Dao.Ctx(ctx).Model(new(R)).Where(where).Updates(data)
-	return result.RowsAffected, result.Error
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		panic(fmt.Sprintf("Update更新错误: %v", result.Error.Error()))
+	}
+	return result.RowsAffected
 }
 
 // -------------------------- 原UpdatePri对应实现：按主键更新记录 --------------------------
-func (c Curd[R]) UpdatePri(ctx ctx, primaryKey any, data any) (count int64, err error) {
+func (c Curd[R]) UpdatePri(ctx ctx, primaryKey any, data any) (count int64) {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 	pk := c.Dao.PrimaryKey()
 
 	if pk == "" {
-		return 0, errors.New("主键字段未配置")
+		panic("主键字段未配置")
 	}
 
 	result := db.Where(fmt.Sprintf("%s = ?", pk), primaryKey).Updates(data)
-	return result.RowsAffected, result.Error
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		panic(fmt.Sprintf("UpdatePri更新错误: %v", result.Error.Error()))
+	}
+	return result.RowsAffected
 }
 
 // -------------------------- 原Paginate对应实现：分页查询 --------------------------
-func (c Curd[R]) Paginate(ctx context.Context, where any, p Paginate, with bool, order any) (items []*R, total int64, err error) {
+func (c Curd[R]) Paginate(ctx context.Context, where any, p Paginate, with bool, order any) (items []*R, total int64) {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 
 	// 1. 构建查询条件
@@ -475,8 +496,8 @@ func (c Curd[R]) Paginate(ctx context.Context, where any, p Paginate, with bool,
 	}
 
 	// 2. 统计总数
-	if err = db.Count(&total).Error; err != nil {
-		return nil, 0, err
+	if err := db.Count(&total).Error; err != nil {
+		panic(fmt.Sprintf("Paginate查询错误: %v", err))
 	}
 
 	// 3. 关联查询
@@ -496,7 +517,10 @@ func (c Curd[R]) Paginate(ctx context.Context, where any, p Paginate, with bool,
 	}
 
 	// 6. 执行查询
-	err = db.Find(&items).Error
+	err := db.Find(&items).Error
+	if err != nil || errors.Is(err, gorm.ErrRecordNotFound) {
+		panic(fmt.Sprintf("Paginate查询错误: %v", err))
+	}
 	return
 }
 
