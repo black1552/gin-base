@@ -10,7 +10,6 @@ func SetAutoMigrate(models ...interface{}) {
 		log.Error("数据库连接失败")
 		return
 	}
-	Db = Db.Set("gorm:table_options", "ENGINE=InnoDB")
 	err := Db.AutoMigrate(models...)
 	if err != nil {
 		log.Error("数据库迁移失败", err)
