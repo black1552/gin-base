@@ -12,12 +12,11 @@ func ErrorHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				if len(c.Errors) > 0 {
-					// Step3: Use the last error
-					laErr := c.Errors.Last().Err
-
-					// Step4: Respond with a generic error message
-					response.Error(c).SetCode(http.StatusInternalServerError).SetMsg(laErr.Error()).End()
+				switch e := err.(type) {
+				case error:
+					response.Error(c).SetCode(http.StatusInternalServerError).SetMsg(e.Error())
+				default:
+					log.Error(c.Errors.Last().Error())
 				}
 				log.Error("发生panic=》", "path：", c.Request.URL.Path, ",method:", c.Request.Method, ",", err)
 				c.Abort()
