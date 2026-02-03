@@ -67,5 +67,10 @@ func mysqlInit() {
 }
 
 func sqliteInit() {
+	_, err = gfile.Create(dns.String())
+	if err != nil {
+		log.Error("创建数据库文件失败: ", err)
+		return
+	}
 	Type = sqlite.Open(dns.String())
 }
