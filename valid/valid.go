@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
@@ -17,13 +18,6 @@ var (
 	validate *validator.Validate // 全局验证器实例
 	found    bool
 )
-
-// -------------------------- 统一响应格式 --------------------------
-type ApiResponse struct {
-	Code int         `json:"code"`
-	Msg  string      `json:"msg"`
-	Data interface{} `json:"data"`
-}
 
 // -------------------------- 初始化全局验证器+中文翻译器（关键：与Gin关联） --------------------------
 func init() {
@@ -40,7 +34,11 @@ func init() {
 
 	// 3. 关键：获取 Gin 内置的 validator 实例（而非手动创建 new(validator.Validate)）
 	// 保证 Gin 绑定参数时使用的是我们注册了翻译的这个验证器
-	validate = validator.New()
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		validate = v
+	} else {
+		panic("获取 Gin 内置验证器失败")
+	}
 
 	// 4. 注册中文翻译（核心：将验证器与中文翻译器绑定）
 	err = zh_translations.RegisterDefaultTranslations(validate, trans)
