@@ -455,7 +455,7 @@ func (c Curd[R]) Count(ctx ctx, where any) (count int64) {
 
 // -------------------------- 原Save对应实现：新增/更新记录（对应GORM的Save） --------------------------
 func (c Curd[R]) Save(ctx ctx, data any) {
-	err := c.Dao.Ctx(ctx).Model(new(R)).Save(data).Error
+	err := c.Dao.Ctx(ctx).Model(new(R)).Create(data).Error
 	if err != nil {
 		panic(fmt.Sprintf("Save保存错误: %v", err))
 	}
