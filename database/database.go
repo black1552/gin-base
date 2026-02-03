@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 
 	"git.magicany.cc/black1552/gin-base/config"
 	"git.magicany.cc/black1552/gin-base/log"
@@ -18,7 +19,7 @@ var (
 	Db    *gorm.DB
 	err   error
 	sqlDb *sql.DB
-	dns   = config.GetConfigValue("database.dns", gfile.Join(gfile.Pwd(), "db", "database.db?cache=shared&mode=rwc&_busy_timeout=10000&_fk=1&_journal=WAL&_sync=FULL"))
+	dns   = config.GetConfigValue("database.dns", gfile.Join(gfile.Pwd(), "db", "database.db"))
 )
 
 func init() {
@@ -72,5 +73,5 @@ func sqliteInit() {
 		log.Error("创建数据库文件失败: ", err)
 		return
 	}
-	Type = sqlite.Open(dns.String())
+	Type = sqlite.Open(fmt.Sprintf("%s?cache=shared&mode=rwc&_busy_timeout=10000&_fk=1&_journal=WAL&_sync=FULL", dns.String()))
 }
