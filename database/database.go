@@ -18,7 +18,7 @@ var (
 	Db    *gorm.DB
 	err   error
 	sqlDb *sql.DB
-	dns   = config.GetConfigValue("database.dns", gfile.Join(gfile.Pwd(), "db", "database.db?_fk=1&_journal=WAL&_sync=FULL"))
+	dns   = config.GetConfigValue("database.dns", gfile.Join(gfile.Pwd(), "db", "database.db?cache=shared&mode=rwc&_busy_timeout=10000&_fk=1&_journal=WAL&_sync=FULL"))
 )
 
 func init() {
