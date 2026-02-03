@@ -6,6 +6,7 @@ import (
 	"git.magicany.cc/black1552/gin-base/config"
 	"git.magicany.cc/black1552/gin-base/log"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gfile"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -16,7 +17,7 @@ var (
 	Db    *gorm.DB
 	err   error
 	sqlDb *sql.DB
-	dns   = config.GetConfigValue("database.dns", "")
+	dns   = config.GetConfigValue("database.dns", gfile.Join(gfile.Pwd(), "db", "database.db"))
 )
 
 func init() {
@@ -24,7 +25,7 @@ func init() {
 		log.Error("gormDns未配置", "请检查配置文件")
 		return
 	}
-	switch config.GetConfigValue("database.type", "mysql").String() {
+	switch config.GetConfigValue("database.type", "sqlite").String() {
 	case "mysql":
 		log.Info("使用mysql数据库")
 		mysqlInit()
@@ -50,7 +51,7 @@ func init() {
 
 func mysqlInit() {
 	Type = mysql.New(mysql.Config{
-		DSN:                       config.GetConfigValue("database.dns", "").String(),
+		DSN:                       dns.String(),
 		DefaultStringSize:         255,   // string 类型字段的默认长度
 		DisableDatetimePrecision:  true,  // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
 		DontSupportRenameIndex:    true,  // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
@@ -59,5 +60,5 @@ func mysqlInit() {
 }
 
 func sqliteInit() {
-	Type = sqlite.Open(config.GetConfigValue("database.dns", "").String())
+	Type = sqlite.Open(dns.String())
 }
