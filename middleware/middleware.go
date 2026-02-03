@@ -12,12 +12,16 @@ func ErrorHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
+				res := response.Error(c).SetCode(http.StatusInternalServerError)
 				switch e := err.(type) {
+				case string:
+					res = res.SetMsg(e)
 				case error:
-					response.Error(c).SetCode(http.StatusInternalServerError).SetMsg(e.Error())
+					res = res.SetMsg(e.Error())
 				default:
-					log.Error(c.Errors.Last().Error())
+					res = res.SetMsg("服务器内部异常，请稍后重试")
 				}
+				res.End()
 				log.Error("发生panic=》", "path：", c.Request.URL.Path, ",method:", c.Request.Method, ",", err)
 				c.Abort()
 			}
