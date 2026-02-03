@@ -5,11 +5,12 @@ import (
 
 	"git.magicany.cc/black1552/gin-base/config"
 	"git.magicany.cc/black1552/gin-base/log"
+	"github.com/glebarez/sqlite"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gfile"
 	"gorm.io/driver/mysql"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 var (
@@ -17,7 +18,7 @@ var (
 	Db    *gorm.DB
 	err   error
 	sqlDb *sql.DB
-	dns   = config.GetConfigValue("database.dns", gfile.Join(gfile.Pwd(), "db", "database.db"))
+	dns   = config.GetConfigValue("database.dns", gfile.Join(gfile.Pwd(), "db", "database.db?_fk=1&_journal=WAL&_sync=FULL"))
 )
 
 func init() {
@@ -33,7 +34,13 @@ func init() {
 		log.Info("使用sqlite数据库")
 		sqliteInit()
 	}
-	Db, err = gorm.Open(Type, &gorm.Config{})
+	Db, err = gorm.Open(Type, &gorm.Config{
+		SkipDefaultTransaction: true,
+		// 命名策略：保持与模型一致，避免字段/表名转换问题
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true, // 表名禁用复数形式（例如 User 对应 user 表，而非 users）
+		},
+	})
 	if err != nil {
 		log.Error("数据库连接失败: ", err)
 		return

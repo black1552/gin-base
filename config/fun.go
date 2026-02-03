@@ -58,7 +58,7 @@ func SetDefault() {
 	viper.Set("SERVER.addr", "127.0.0.1:8080")
 	viper.Set("SERVER.mode", "release")
 	viper.Set("DATABASE.type", "sqlite")
-	viper.Set("DATABASE.dns", gfile.Join(gfile.Pwd(), "db", "database.db"))
+	viper.Set("DATABASE.dns", gfile.Join(gfile.Pwd(), "db", "database.db?_fk=1&_journal=WAL&_sync=FULL"))
 	viper.Set("JWT.secret", "SET-YOUR-SECRET")
 	viper.Set("JWT.expire", 86400)
 }
