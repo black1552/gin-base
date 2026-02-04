@@ -10,13 +10,6 @@
             </set>
           </value>
         </entry>
-        <entry key="ApiResponse">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/valid/valid.go" />
-            </set>
-          </value>
-        </entry>
         <entry key="BaseConfig">
           <value>
             <set>
@@ -52,25 +45,10 @@
             </set>
           </value>
         </entry>
-        <entry key="Crud">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/dao/dao.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="Cs1News">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/model/news.go" />
-            </set>
-          </value>
-        </entry>
         <entry key="Curd">
           <value>
             <set>
               <option value="file://$PROJECT_DIR$/curd/curd.go" />
-              <option value="file://$PROJECT_DIR$/dao/dao.go" />
             </set>
           </value>
         </entry>
@@ -109,39 +87,10 @@
             </set>
           </value>
         </entry>
-        <entry key="News">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/model/news.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="NewsDb">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/model/news.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="NewsOne">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/req/new.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="NewsSave">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/req/new.go" />
-            </set>
-          </value>
-        </entry>
         <entry key="Paginate">
           <value>
             <set>
               <option value="file://$PROJECT_DIR$/curd/curd.go" />
-              <option value="file://$PROJECT_DIR$/dao/dao.go" />
             </set>
           </value>
         </entry>
@@ -187,27 +136,6 @@
             </set>
           </value>
         </entry>
-        <entry key="sNewsDao">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/dao/newsDao.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="sNewsDb">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/model/news.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="userDao">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/dao/userDao.go" />
-            </set>
-          </value>
-        </entry>
       </map>
     </option>
     <option name="scannedPathMapping">
@@ -245,19 +173,6 @@
           <value>
             <ScannedPath>
               <option name="lastModified" value="1770102564408" />
-              <option name="schema">
-                <list>
-                  <option value="Paginate" />
-                  <option value="Curd" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/dao/dao.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770086496457" />
               <option name="schema">
                 <list>
                   <option value="Paginate" />
@@ -408,22 +323,10 @@
             </ScannedPath>
           </value>
         </entry>
-        <entry key="file://$PROJECT_DIR$/valid/index.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770109401228" />
-            </ScannedPath>
-          </value>
-        </entry>
         <entry key="file://$PROJECT_DIR$/valid/valid.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1770109758999" />
-              <option name="schema">
-                <list>
-                  <option value="ApiResponse" />
-                </list>
-              </option>
+              <option name="lastModified" value="1770185876649" />
             </ScannedPath>
           </value>
         </entry>
@@ -449,133 +352,31 @@
             </ScannedPath>
           </value>
         </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/dao/dao.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770085772445" />
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/dao/newsDao.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770097580598" />
-              <option name="schema">
-                <list>
-                  <option value="sNewsDao" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/dao/userDao.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770087884880" />
-              <option name="schema">
-                <list>
-                  <option value="userDao" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/main.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770097796404" />
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/migrate/index.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770097713976" />
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/migrate/migrate.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770097831261" />
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/model/index.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770083071840" />
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/model/news.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770103134469" />
-              <option name="schema">
-                <list>
-                  <option value="News" />
-                  <option value="sNewsDb" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/req/new.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770109333290" />
-              <option name="schema">
-                <list>
-                  <option value="NewsOne" />
-                  <option value="NewsSave" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/router/router.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770109774053" />
-            </ScannedPath>
-          </value>
-        </entry>
       </map>
     </option>
     <option name="tableStructMapping">
       <map>
         <entry key="api" value="Api" />
-        <entry key="api_response" value="ApiResponse" />
         <entry key="base_config" value="BaseConfig" />
         <entry key="client" value="Client" />
         <entry key="config" value="Config" />
         <entry key="connection" value="Connection" />
         <entry key="connection_pool" value="ConnectionPool" />
-        <entry key="crud" value="Crud" />
-        <entry key="cs1_news" value="Cs1News" />
         <entry key="curd" value="Curd" />
         <entry key="data_base_config" value="DataBaseConfig" />
         <entry key="jwt_claims" value="JWTClaims" />
         <entry key="jwt_config" value="JwtConfig" />
         <entry key="manager" value="Manager" />
         <entry key="msg" value="Msg" />
-        <entry key="news" value="News" />
-        <entry key="news_db" value="NewsDb" />
-        <entry key="news_one" value="NewsOne" />
-        <entry key="news_save" value="NewsSave" />
         <entry key="paginate" value="Paginate" />
         <entry key="response" value="response" />
-        <entry key="s_news_dao" value="sNewsDao" />
-        <entry key="s_news_db" value="sNewsDb" />
         <entry key="server_config" value="ServerConfig" />
         <entry key="tcp_connection" value="TcpConnection" />
         <entry key="tcp_message" value="TcpMessage" />
         <entry key="tcp_pool_config" value="TcpPoolConfig" />
         <entry key="tcp_server" value="TCPServer" />
-        <entry key="user_dao" value="userDao" />
       </map>
     </option>
-    <option name="lastTimeChecked" value="1770082491799" />
+    <option name="lastTimeChecked" value="1770185677345" />
   </component>
 </project>
