@@ -90,6 +90,7 @@
         <entry key="NewsOne">
           <value>
             <set>
+              <option value="file://$PROJECT_DIR$/../gin_test/api/new.go" />
               <option value="file://$PROJECT_DIR$/../gin_test/req/new.go" />
             </set>
           </value>
@@ -97,6 +98,7 @@
         <entry key="NewsSave">
           <value>
             <set>
+              <option value="file://$PROJECT_DIR$/../gin_test/api/new.go" />
               <option value="file://$PROJECT_DIR$/../gin_test/req/new.go" />
             </set>
           </value>
@@ -340,7 +342,7 @@
         <entry key="file://$PROJECT_DIR$/valid/valid.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1770188678912" />
+              <option name="lastModified" value="1770192971883" />
             </ScannedPath>
           </value>
         </entry>
@@ -366,6 +368,47 @@
             </ScannedPath>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/../gin_test/api/home.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1770190095707" />
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gin_test/api/new.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1770191206242" />
+              <option name="schema">
+                <list>
+                  <option value="NewsOne" />
+                  <option value="NewsSave" />
+                </list>
+              </option>
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gin_test/controller/home/houeRouter.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1770191001042" />
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gin_test/controller/home/index.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1770191170351" />
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gin_test/controller/home/router.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1770190557848" />
+            </ScannedPath>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/../gin_test/req/new.go">
           <value>
             <ScannedPath>
@@ -382,7 +425,7 @@
         <entry key="file://$PROJECT_DIR$/../gin_test/router/router.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1770188593199" />
+              <option name="lastModified" value="1770191024510" />
             </ScannedPath>
           </value>
         </entry>
