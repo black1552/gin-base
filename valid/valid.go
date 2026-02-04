@@ -7,8 +7,8 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 )
 
-// ValidAndStruct 验证参数并返回结构体
-func ValidAndStruct[T any](c *gin.Context) (object *T) {
+// ValidToStruct 验证参数并返回结构体
+func ValidToStruct[T any](c *gin.Context) (object *T) {
 	obj := new(T)
 	if err := c.BindJSON(obj); err != nil {
 		panic(err)
@@ -19,8 +19,8 @@ func ValidAndStruct[T any](c *gin.Context) (object *T) {
 	return obj
 }
 
-// ValidAndMap 验证参数并返回map
-func ValidAndMap[T any](c *gin.Context) (object map[string]any) {
+// ValidToStructAndMap 验证参数并返回map
+func ValidToStructAndMap[T any](c *gin.Context) (stru *T, object map[string]any) {
 	obj := new(T)
 	if err := c.BindJSON(obj); err != nil {
 		panic(err)
@@ -28,5 +28,5 @@ func ValidAndMap[T any](c *gin.Context) (object map[string]any) {
 	if err := g.Validator().Data(obj).Run(c); err != nil {
 		panic(gerror.Current(err).Error())
 	}
-	return gconv.Map(obj)
+	return obj, gconv.Map(obj)
 }
