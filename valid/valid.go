@@ -15,18 +15,6 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 )
 
-// ValidToStruct 验证参数并返回结构体
-func ValidToStruct[T any](c *gin.Context) (object *T) {
-	obj := new(T)
-	if err := c.ShouldBind(obj); err != nil {
-		panic(err)
-	}
-	if err := g.Validator().Data(obj).Run(c); err != nil {
-		panic(gerror.Current(err).Error())
-	}
-	return obj
-}
-
 // CustomBind 自定义参数绑定，不使用Gin的ShouldBind
 func CustomBind[T any](c *gin.Context) *T {
 	obj := new(T)
@@ -75,34 +63,10 @@ func CustomBind[T any](c *gin.Context) *T {
 	return obj
 }
 
-// ValidToMap 验证参数并返回结构体
-func ValidToMap[T any](c *gin.Context) (object map[string]any) {
-	obj := new(T)
-	if err := c.ShouldBind(obj); err != nil {
-		panic(err)
-	}
-	if err := g.Validator().Data(obj).Run(c); err != nil {
-		panic(gerror.Current(err).Error())
-	}
-	return gconv.Map(obj)
-}
-
 // CustomBindToMap 自定义参数绑定到map
 func CustomBindToMap[T any](c *gin.Context) map[string]any {
 	obj := CustomBind[T](c)
 	return gconv.Map(obj)
-}
-
-// ValidToStructAndMap 验证参数并返回map
-func ValidToStructAndMap[T any](c *gin.Context) (stru *T, object map[string]any) {
-	obj := new(T)
-	if err := c.ShouldBind(obj); err != nil {
-		panic(err)
-	}
-	if err := g.Validator().Data(obj).Run(c); err != nil {
-		panic(gerror.Current(err).Error())
-	}
-	return obj, gconv.Map(obj)
 }
 
 // CustomBindStructAndMap 自定义参数绑定并返回结构体和map

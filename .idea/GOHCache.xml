@@ -340,7 +340,7 @@
         <entry key="file://$PROJECT_DIR$/valid/valid.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1772006460780" />
+              <option name="lastModified" value="1772007792251" />
             </ScannedPath>
           </value>
         </entry>
@@ -369,7 +369,7 @@
         <entry key="file://$PROJECT_DIR$/../gin_test/api/new.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1772003979851" />
+              <option name="lastModified" value="1772007643850" />
               <option name="schema">
                 <list>
                   <option value="NewsOne" />
@@ -382,7 +382,21 @@
         <entry key="file://$PROJECT_DIR$/../gin_test/controller/home/index.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1772005679921" />
+              <option name="lastModified" value="1772007727399" />
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gin_test/main.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772006716414" />
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gin_test/middleware/middleware.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772006700129" />
             </ScannedPath>
           </value>
         </entry>
@@ -397,6 +411,13 @@
           <value>
             <ScannedPath>
               <option name="lastModified" value="1772003574719" />
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gin_test/utils/customer.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772007185481" />
             </ScannedPath>
           </value>
         </entry>
