@@ -340,7 +340,7 @@
         <entry key="file://$PROJECT_DIR$/valid/valid.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1772004278917" />
+              <option name="lastModified" value="1772006460780" />
             </ScannedPath>
           </value>
         </entry>
@@ -376,6 +376,13 @@
                   <option value="NewsSave" />
                 </list>
               </option>
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gin_test/controller/home/index.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772005679921" />
             </ScannedPath>
           </value>
         </entry>

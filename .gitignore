@@ -3,10 +3,9 @@
 .project
 .orig
 .swp
-.idea/
+.idea
 .settings/
-.vscode/
-bin/
+.vscode
 **/.DS_Store
 gf
 main

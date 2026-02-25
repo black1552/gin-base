@@ -28,7 +28,7 @@ func ValidToStruct[T any](c *gin.Context) (object *T) {
 }
 
 // CustomBind 自定义参数绑定，不使用Gin的ShouldBind
-func CustomBind[T any](c *gin.Context) (*T, error) {
+func CustomBind[T any](c *gin.Context) *T {
 	obj := new(T)
 
 	// 获取请求方法
@@ -43,40 +43,36 @@ func CustomBind[T any](c *gin.Context) (*T, error) {
 		contentType := c.GetHeader("Content-Type")
 		if strings.Contains(contentType, "application/json") {
 			// JSON格式请求体
-			if err := bindFromJSON(c, obj); err != nil {
-				return nil, err
-			}
+			bindFromJSON(c, obj)
 		} else if strings.Contains(contentType, "application/x-www-form-urlencoded") ||
 			strings.Contains(contentType, "multipart/form-data") {
 			// 表单格式请求体
 			if err := c.Request.ParseForm(); err != nil {
-				return nil, fmt.Errorf("解析表单数据失败: %w", err)
+				panic(err)
 			}
 			params = c.Request.PostForm
 		} else {
 			// 默认尝试解析为表单
 			if err := c.Request.ParseForm(); err != nil {
-				return nil, fmt.Errorf("解析请求数据失败: %w", err)
+				panic(err)
 			}
 			params = c.Request.PostForm
 		}
 	default:
-		return nil, fmt.Errorf("不支持的请求方法: %s", method)
+		panic(fmt.Sprintf("不支持的请求方法: %s", method))
 	}
 
 	// 如果不是JSON请求，则从params绑定
 	if params != nil {
-		if err := bindFromParams(obj, params); err != nil {
-			return nil, err
-		}
+		bindFromParams(c, obj, params)
 	}
 
 	// 验证参数
 	if err := g.Validator().Data(obj).Run(c); err != nil {
-		return nil, gerror.Current(err)
+		panic(gerror.Current(err).Error())
 	}
 
-	return obj, nil
+	return obj
 }
 
 // ValidToMap 验证参数并返回结构体
@@ -92,12 +88,9 @@ func ValidToMap[T any](c *gin.Context) (object map[string]any) {
 }
 
 // CustomBindToMap 自定义参数绑定到map
-func CustomBindToMap[T any](c *gin.Context) (map[string]any, error) {
-	obj, err := CustomBind[T](c)
-	if err != nil {
-		return nil, err
-	}
-	return gconv.Map(obj), nil
+func CustomBindToMap[T any](c *gin.Context) map[string]any {
+	obj := CustomBind[T](c)
+	return gconv.Map(obj)
 }
 
 // ValidToStructAndMap 验证参数并返回map
@@ -113,20 +106,17 @@ func ValidToStructAndMap[T any](c *gin.Context) (stru *T, object map[string]any)
 }
 
 // CustomBindStructAndMap 自定义参数绑定并返回结构体和map
-func CustomBindStructAndMap[T any](c *gin.Context) (*T, map[string]any, error) {
-	obj, err := CustomBind[T](c)
-	if err != nil {
-		return nil, nil, err
-	}
-	return obj, gconv.Map(obj), nil
+func CustomBindStructAndMap[T any](c *gin.Context) (*T, map[string]any) {
+	obj := CustomBind[T](c)
+	return obj, gconv.Map(obj)
 }
 
 // bindFromJSON 从JSON请求体绑定参数
-func bindFromJSON[T any](c *gin.Context, obj *T) error {
+func bindFromJSON[T any](c *gin.Context, obj *T) {
 	// 读取请求体
 	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		return fmt.Errorf("读取请求体失败: %w", err)
+		panic(fmt.Sprintf("JSON解析失败:%v", err))
 	}
 
 	// 恢复请求体，以便后续使用
@@ -134,22 +124,20 @@ func bindFromJSON[T any](c *gin.Context, obj *T) error {
 
 	// 解析JSON
 	if err := json.Unmarshal(body, obj); err != nil {
-		return fmt.Errorf("JSON解析失败: %w", err)
+		panic(fmt.Sprintf("JSON解析失败:%v", err))
 	}
-
-	return nil
 }
 
 // bindFromParams 从参数映射绑定到结构体
-func bindFromParams(obj any, params map[string][]string) error {
+func bindFromParams(c *gin.Context, obj any, params map[string][]string) {
 	objValue := reflect.ValueOf(obj)
 	if objValue.Kind() != reflect.Ptr {
-		return fmt.Errorf("目标必须是指针类型")
+		panic("目标必须为指针")
 	}
 
 	objValue = objValue.Elem()
 	if objValue.Kind() != reflect.Struct {
-		return fmt.Errorf("目标必须是指向结构体的指针")
+		panic("目标必须指向结构体")
 	}
 
 	objType := objValue.Type()
@@ -192,11 +180,9 @@ func bindFromParams(obj any, params map[string][]string) error {
 
 		// 根据字段类型进行转换
 		if err := setFieldValue(fieldValue, paramValue); err != nil {
-			return fmt.Errorf("设置字段 %s 失败: %w", paramName, err)
+			panic(fmt.Sprintf("参数 %s 转换失败: %v", paramName, err))
 		}
 	}
-
-	return nil
 }
 
 // setFieldValue 设置字段值
@@ -207,25 +193,25 @@ func setFieldValue(field reflect.Value, value string) error {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		intValue, err := strconv.ParseInt(value, 10, 64)
 		if err != nil {
-			return err
+			panic(err)
 		}
 		field.SetInt(intValue)
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		uintValue, err := strconv.ParseUint(value, 10, 64)
 		if err != nil {
-			return err
+			panic(err)
 		}
 		field.SetUint(uintValue)
 	case reflect.Float32, reflect.Float64:
 		floatValue, err := strconv.ParseFloat(value, 64)
 		if err != nil {
-			return err
+			panic(err)
 		}
 		field.SetFloat(floatValue)
 	case reflect.Bool:
 		boolValue, err := strconv.ParseBool(value)
 		if err != nil {
-			return err
+			panic(err)
 		}
 		field.SetBool(boolValue)
 	case reflect.Slice:
@@ -235,11 +221,11 @@ func setFieldValue(field reflect.Value, value string) error {
 		// 创建元素并设置值
 		element := newValue.Index(0)
 		if err := setFieldValue(element, value); err != nil {
-			return err
+			panic(err)
 		}
 		field.Set(newValue)
 	default:
-		return fmt.Errorf("不支持的字段类型: %v", field.Kind())
+		panic(fmt.Sprintf("不支持的字段类型: %v", field.Kind()))
 	}
 
 	return nil
