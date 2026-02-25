@@ -54,6 +54,7 @@ func init() {
 	})
 }
 
+// SetDefault 设置默认配置信息
 func SetDefault() {
 	viper.Set("SERVER.addr", "127.0.0.1:8080")
 	viper.Set("SERVER.mode", "release")
@@ -63,6 +64,7 @@ func SetDefault() {
 	viper.Set("JWT.expire", 86400)
 }
 
+// LoadConfigFromFile 在配置文件中加载配置
 func LoadConfigFromFile() error {
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -71,6 +73,7 @@ func LoadConfigFromFile() error {
 	return nil
 }
 
+// SetConfigValue 设置指定配置文件的值
 func SetConfigValue(key string, value any) error {
 	viper.SetDefault(key, value)
 	err := viper.WriteConfig()
@@ -80,6 +83,7 @@ func SetConfigValue(key string, value any) error {
 	return nil
 }
 
+// SetConfigMap 使用Map的方式添加配置信息
 func SetConfigMap(value map[string]any) error {
 	if len(value) == 0 {
 		log.Error("value is empty")
@@ -95,6 +99,7 @@ func SetConfigMap(value map[string]any) error {
 	return nil
 }
 
+// GetConfigValue  获取指定配置的值
 func GetConfigValue(key string, def ...any) *gvar.Var {
 	value := gvar.New(viper.Get(key))
 	if value.IsEmpty() && len(def) > 0 {
@@ -102,12 +107,15 @@ func GetConfigValue(key string, def ...any) *gvar.Var {
 	}
 	return value
 }
+
+// Unmarshal 将配置解析成指定的对象
 func Unmarshal[T any]() (*T, error) {
 	var s T
 	err := viper.Unmarshal(&s)
 	return &s, err
 }
 
+// GetAllConfig 获取所有配置信息并返回Map
 func GetAllConfig() map[string]any {
 	return viper.AllSettings()
 }

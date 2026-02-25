@@ -10,7 +10,7 @@ import (
 // ValidToStruct 验证参数并返回结构体
 func ValidToStruct[T any](c *gin.Context) (object *T) {
 	obj := new(T)
-	if err := c.Bind(obj); err != nil {
+	if err := c.ShouldBind(obj); err != nil {
 		panic(err)
 	}
 	if err := g.Validator().Data(obj).Run(c); err != nil {
@@ -22,7 +22,7 @@ func ValidToStruct[T any](c *gin.Context) (object *T) {
 // ValidToMap 验证参数并返回结构体
 func ValidToMap[T any](c *gin.Context) (object map[string]any) {
 	obj := new(T)
-	if err := c.Bind(obj); err != nil {
+	if err := c.ShouldBind(obj); err != nil {
 		panic(err)
 	}
 	if err := g.Validator().Data(obj).Run(c); err != nil {
@@ -34,7 +34,7 @@ func ValidToMap[T any](c *gin.Context) (object map[string]any) {
 // ValidToStructAndMap 验证参数并返回map
 func ValidToStructAndMap[T any](c *gin.Context) (stru *T, object map[string]any) {
 	obj := new(T)
-	if err := c.Bind(obj); err != nil {
+	if err := c.ShouldBind(obj); err != nil {
 		panic(err)
 	}
 	if err := g.Validator().Data(obj).Run(c); err != nil {
