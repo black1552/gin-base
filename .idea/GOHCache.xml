@@ -3,6 +3,20 @@
   <component name="GoORMHelperCache">
     <option name="schemaMapping">
       <map>
+        <entry key="Api">
+          <value>
+            <set>
+              <option value="file://$PROJECT_DIR$/response/code.go" />
+            </set>
+          </value>
+        </entry>
+        <entry key="ApiFile">
+          <value>
+            <set>
+              <option value="file://$PROJECT_DIR$/response/code.go" />
+            </set>
+          </value>
+        </entry>
         <entry key="BaseConfig">
           <value>
             <set>
@@ -143,6 +157,20 @@
             </set>
           </value>
         </entry>
+        <entry key="apiFile">
+          <value>
+            <set>
+              <option value="file://$PROJECT_DIR$/response/code.go" />
+            </set>
+          </value>
+        </entry>
+        <entry key="resFile">
+          <value>
+            <set>
+              <option value="file://$PROJECT_DIR$/response/code.go" />
+            </set>
+          </value>
+        </entry>
         <entry key="response">
           <value>
             <set>
@@ -157,7 +185,7 @@
         <entry key="file://$PROJECT_DIR$/config/fun.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1770427966184" />
+              <option name="lastModified" value="1772004328410" />
             </ScannedPath>
           </value>
         </entry>
@@ -260,11 +288,13 @@
         <entry key="file://$PROJECT_DIR$/response/code.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1770444657704" />
+              <option name="lastModified" value="1772068030461" />
               <option name="schema">
                 <list>
                   <option value="response" />
-                  <option value="api" />
+                  <option value="Api" />
+                  <option value="resFile" />
+                  <option value="ApiFile" />
                 </list>
               </option>
             </ScannedPath>
@@ -425,7 +455,8 @@
     </option>
     <option name="tableStructMapping">
       <map>
-        <entry key="api" value="api" />
+        <entry key="api" value="Api" />
+        <entry key="api_file" value="ApiFile" />
         <entry key="base_config" value="BaseConfig" />
         <entry key="client" value="Client" />
         <entry key="config" value="Config" />
@@ -440,6 +471,7 @@
         <entry key="news_one" value="NewsOne" />
         <entry key="news_save" value="NewsSave" />
         <entry key="paginate" value="Paginate" />
+        <entry key="res_file" value="resFile" />
         <entry key="response" value="response" />
         <entry key="server_config" value="ServerConfig" />
         <entry key="tcp_connection" value="TcpConnection" />
