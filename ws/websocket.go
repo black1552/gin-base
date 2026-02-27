@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"git.magicany.cc/black1552/gin-base/pool"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/gtime"
@@ -20,20 +21,20 @@ import (
 
 // 常量定义：默认配置
 const (
-	// DefaultReadBufferSize 默认读写缓冲区大小（字节）
+	// 默认读写缓冲区大小（字节）
 	DefaultReadBufferSize  = 1024
 	DefaultWriteBufferSize = 1024
-	// DefaultHeartbeatInterval 默认心跳间隔（秒）：每30秒发送一次心跳
+	// 默认心跳间隔（秒）：每30秒发送一次心跳
 	DefaultHeartbeatInterval = 30 * time.Second
-	// DefaultHeartbeatTimeout 默认心跳超时（秒）：60秒未收到客户端心跳响应则关闭连接
+	// 默认心跳超时（秒）：60秒未收到客户端心跳响应则关闭连接
 	DefaultHeartbeatTimeout = 60 * time.Second
-	// DefaultReadTimeout 默认读写超时（秒）
+	// 默认读写超时（秒）
 	DefaultReadTimeout  = 60 * time.Second
 	DefaultWriteTimeout = 10 * time.Second
-	// MessageTypeText 消息类型
+	// 消息类型
 	MessageTypeText   = websocket.TextMessage
 	MessageTypeBinary = websocket.BinaryMessage
-	// HeartbeatMaxRetry 心跳最大重试次数
+	// 心跳最大重试次数
 	HeartbeatMaxRetry = 3
 )
 
@@ -92,7 +93,8 @@ type Connection struct {
 type Manager struct {
 	config      *Config                // 配置
 	upgrader    *websocket.Upgrader    // HTTP升级器
-	connections map[string]*Connection // 所有在线连接（connID -> Connection）
+	connections map[string]*Connection // 内存中的连接（connID -> Connection）
+	sqlitePool  *pool.SQLitePool       // SQLite连接池
 	mutex       sync.RWMutex           // 读写锁（保护connections）
 	// 业务回调：收到消息时触发（用户自定义处理逻辑）
 	OnMessage func(connID string, msgType int, data any)
@@ -148,16 +150,16 @@ func (c *Config) Merge(other *Config) *Config {
 }
 
 // NewManager 创建连接管理器
-func NewManager(config *Config) *Manager {
+func NewManager(config *Config) (*Manager, error) {
 	defaultConfig := DefaultConfig()
 	finalConfig := defaultConfig.Merge(config)
 	// 初始化升级器
 	upgrader := &websocket.Upgrader{
-		ReadBufferSize:  config.ReadBufferSize,
-		WriteBufferSize: config.WriteBufferSize,
+		ReadBufferSize:  finalConfig.ReadBufferSize,
+		WriteBufferSize: finalConfig.WriteBufferSize,
 		CheckOrigin: func(r *http.Request) bool {
 			// 跨域检查
-			if config.AllowAllOrigins {
+			if finalConfig.AllowAllOrigins {
 				return true
 			}
 			origin := r.Header.Get("Origin")
@@ -170,10 +172,17 @@ func NewManager(config *Config) *Manager {
 		},
 	}
 
+	// 初始化SQLite连接池
+	sqlitePool, err := pool.NewSQLitePool()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create sqlite pool: %w", err)
+	}
+
 	return &Manager{
 		config:      finalConfig,
 		upgrader:    upgrader,
 		connections: make(map[string]*Connection),
+		sqlitePool:  sqlitePool,
 		mutex:       sync.RWMutex{},
 		// 默认回调（用户可覆盖）
 		OnMessage: func(connID string, msgType int, data any) {
@@ -185,7 +194,7 @@ func NewManager(config *Config) *Manager {
 		OnDisconnect: func(connID string, err error) {
 			log.Printf("[默认回调] 连接[%s]已关闭：%v", connID, err)
 		},
-	}
+	}, nil
 }
 
 // Upgrade HTTP升级为WebSocket连接
@@ -237,6 +246,24 @@ func (m *Manager) Upgrade(w http.ResponseWriter, r *http.Request, connID string)
 	m.connections[connID] = wsConn
 	m.mutex.Unlock()
 
+	// 存储到SQLite
+	connInfo := &pool.ConnectionInfo{
+		ID:        connID,
+		Type:      pool.ConnTypeWebSocket,
+		Address:   r.RemoteAddr,
+		IsActive:  true,
+		LastUsed:  time.Now(),
+		CreatedAt: time.Now(),
+		Data: map[string]interface{}{
+			"origin":    r.Header.Get("Origin"),
+			"userAgent": r.Header.Get("User-Agent"),
+		},
+	}
+	if err := m.sqlitePool.Add(connInfo); err != nil {
+		log.Printf("[错误] 存储连接到SQLite失败：%v", err)
+		// 不影响连接建立，仅记录错误
+	}
+
 	// 触发连接建立回调
 	m.OnConnect(connID)
 
@@ -280,6 +307,18 @@ func (c *Connection) ReadPump() {
 					c.Close(fmt.Errorf("读取消息失败：%w", err))
 				}
 				return
+			}
+
+			// 更新最后使用时间
+			now := time.Now()
+			// 从SQLite获取连接信息并更新
+			connInfo, err := c.manager.sqlitePool.Get(c.connID)
+			if err == nil && connInfo != nil {
+				connInfo.LastUsed = now
+				if err := c.manager.sqlitePool.Update(connInfo); err != nil {
+					log.Printf("[错误] 更新SQLite连接信息失败：%v", err)
+					// 不影响消息处理，仅记录错误
+				}
 			}
 
 			// 尝试解析JSON格式的心跳消息（精准判断，替代包含判断）
@@ -369,6 +408,19 @@ func (c *Connection) Send(data []byte) error {
 		if err != nil {
 			return fmt.Errorf("发送消息失败：%w", err)
 		}
+
+		// 更新最后使用时间
+		now := time.Now()
+		// 从SQLite获取连接信息并更新
+		connInfo, err := c.manager.sqlitePool.Get(c.connID)
+		if err == nil && connInfo != nil {
+			connInfo.LastUsed = now
+			if err := c.manager.sqlitePool.Update(connInfo); err != nil {
+				log.Printf("[错误] 更新SQLite连接信息失败：%v", err)
+				// 不影响消息发送，仅记录错误
+			}
+		}
+
 		return nil
 	}
 }
@@ -393,6 +445,12 @@ func (c *Connection) Close(err error) {
 	c.manager.mutex.Lock()
 	delete(c.manager.connections, c.connID)
 	c.manager.mutex.Unlock()
+
+	// 从SQLite移除
+	if err := c.manager.sqlitePool.Remove(c.connID); err != nil {
+		log.Printf("[错误] 从SQLite移除连接失败：%v", err)
+		// 不影响连接关闭，仅记录错误
+	}
 
 	// 触发断开回调
 	c.manager.OnDisconnect(c.connID, err)
@@ -462,10 +520,16 @@ func (m *Manager) GetAllConn() map[string]*Connection {
 	return connCopy
 }
 
+// GetConn 获取指定连接
 func (m *Manager) GetConn(connID string) *Connection {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 	return m.connections[connID]
+}
+
+// GetAllConnIDs 获取所有在线连接的ID列表
+func (m *Manager) GetAllConnIDs() ([]string, error) {
+	return m.sqlitePool.GetAllConnIDs()
 }
 
 // CloseAll 关闭所有连接
@@ -485,4 +549,15 @@ func (m *Manager) CloseAll() {
 			conn.Close(errors.New("服务端主动关闭所有连接"))
 		}
 	}
+}
+
+// Close 关闭管理器，清理资源
+func (m *Manager) Close() error {
+	// 关闭所有连接
+	m.CloseAll()
+	// 关闭SQLite连接池
+	if m.sqlitePool != nil {
+		return m.sqlitePool.Close()
+	}
+	return nil
 }

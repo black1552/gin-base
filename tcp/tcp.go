@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"git.magicany.cc/black1552/gf-common/pool"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtcp"
 	"github.com/gogf/gf/v2/os/glog"
@@ -32,18 +33,26 @@ type TCPServer struct {
 // ConnectionPool 连接池结构
 type ConnectionPool struct {
 	connections map[string]*TcpConnection
+	sqlitePool  *pool.SQLitePool
 	mutex       sync.RWMutex
 	config      *TcpPoolConfig
 	logger      *glog.Logger
 }
 
 // NewTCPServer 创建一个新的TCP服务器
-func NewTCPServer(address string, config *TcpPoolConfig) *TCPServer {
+func NewTCPServer(address string, config *TcpPoolConfig) (*TCPServer, error) {
 	logger := g.Log(address)
 	ctx, cancel := context.WithCancel(context.Background())
 
+	// 初始化SQLite连接池
+	sqlitePool, err := pool.NewSQLitePool()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create sqlite pool: %w", err)
+	}
+
 	pool := &ConnectionPool{
 		connections: make(map[string]*TcpConnection),
+		sqlitePool:  sqlitePool,
 		config:      config,
 		logger:      logger,
 	}
@@ -58,7 +67,7 @@ func NewTCPServer(address string, config *TcpPoolConfig) *TCPServer {
 	}
 
 	server.Listener = gtcp.NewServer(address, server.handleConnection)
-	return server
+	return server, nil
 }
 
 // SetMessageHandler 设置消息处理函数
@@ -86,6 +95,11 @@ func (s *TCPServer) Stop() error {
 	s.Listener.Close()
 	s.wg.Wait()
 	s.Connection.Clear()
+	// 关闭SQLite连接池
+	if err := s.Connection.sqlitePool.Close(); err != nil {
+		s.Logger.Error(s.ctx, fmt.Sprintf("Failed to close SQLite pool: %v", err))
+		// 不影响服务器停止，仅记录错误
+	}
 	s.Logger.Info(s.ctx, "TCP server stopped")
 	return nil
 }
@@ -109,6 +123,23 @@ func (s *TCPServer) handleConnection(conn *gtcp.Conn) {
 	s.Connection.Add(tcpConn)
 	s.Logger.Info(s.ctx, fmt.Sprintf("New connection established: %s", connID))
 
+	// 存储到SQLite
+	connInfo := &pool.ConnectionInfo{
+		ID:        connID,
+		Type:      pool.ConnTypeTCP,
+		Address:   conn.RemoteAddr().String(),
+		IsActive:  true,
+		LastUsed:  time.Now(),
+		CreatedAt: time.Now(),
+		Data: map[string]interface{}{
+			"localAddress": conn.LocalAddr().String(),
+		},
+	}
+	if err := s.Connection.sqlitePool.Add(connInfo); err != nil {
+		s.Logger.Error(s.ctx, fmt.Sprintf("Failed to store connection to SQLite: %v", err))
+		// 不影响连接建立，仅记录错误
+	}
+
 	// 启动消息接收协程
 	go s.receiveMessages(tcpConn)
 }
@@ -121,6 +152,11 @@ func (s *TCPServer) receiveMessages(conn *TcpConnection) {
 		}
 		s.Connection.Remove(conn.Id)
 		conn.Server.Close()
+		// 从SQLite移除
+		if err := s.Connection.sqlitePool.Remove(conn.Id); err != nil {
+			s.Logger.Error(s.ctx, fmt.Sprintf("Failed to remove connection from SQLite: %v", err))
+			// 不影响连接关闭，仅记录错误
+		}
 		s.Logger.Info(s.ctx, fmt.Sprintf("Connection closed: %s", conn.Id))
 	}()
 
@@ -142,9 +178,20 @@ func (s *TCPServer) receiveMessages(conn *TcpConnection) {
 
 			if n > 0 {
 				// 更新最后使用时间
+				now := time.Now()
 				conn.Mutex.Lock()
-				conn.LastUsed = time.Now()
+				conn.LastUsed = now
 				conn.Mutex.Unlock()
+
+				// 更新SQLite中的连接信息
+				connInfo, err := s.Connection.sqlitePool.Get(conn.Id)
+				if err == nil && connInfo != nil {
+					connInfo.LastUsed = now
+					if err := s.Connection.sqlitePool.Update(connInfo); err != nil {
+						s.Logger.Error(s.ctx, fmt.Sprintf("Failed to update connection in SQLite: %v", err))
+						// 不影响消息处理，仅记录错误
+					}
+				}
 
 				// 处理消息
 				data := make([]byte, n)
@@ -209,7 +256,19 @@ func (s *TCPServer) sendMessage(conn *TcpConnection, data []byte) error {
 	}
 
 	// 更新最后使用时间
-	conn.LastUsed = time.Now()
+	now := time.Now()
+	conn.LastUsed = now
+
+	// 更新SQLite中的连接信息
+	connInfo, err := s.Connection.sqlitePool.Get(conn.Id)
+	if err == nil && connInfo != nil {
+		connInfo.LastUsed = now
+		if err := s.Connection.sqlitePool.Update(connInfo); err != nil {
+			s.Logger.Error(s.ctx, fmt.Sprintf("Failed to update connection in SQLite: %v", err))
+			// 不影响消息发送，仅记录错误
+		}
+	}
+
 	return nil
 }
 
@@ -224,9 +283,19 @@ func (s *TCPServer) Kick(connID string) error {
 	conn.Server.Close()
 	// 从连接池移除
 	s.Connection.Remove(connID)
+	// 从SQLite移除
+	if err := s.Connection.sqlitePool.Remove(connID); err != nil {
+		s.Logger.Error(s.ctx, fmt.Sprintf("Failed to remove connection from SQLite: %v", err))
+		// 不影响连接关闭，仅记录错误
+	}
 
 	s.Logger.Info(s.ctx, fmt.Sprintf("Kicked connection: %s", connID))
 	return nil
+}
+
+// GetAllConnIDs 获取所有在线连接的ID列表
+func (s *TCPServer) GetAllConnIDs() ([]string, error) {
+	return s.Connection.GetAllConnIDs()
 }
 
 // Add 添加连接到连接池
@@ -277,4 +346,9 @@ func (p *ConnectionPool) Count() int {
 	p.mutex.RLock()
 	defer p.mutex.RUnlock()
 	return len(p.connections)
+}
+
+// GetAllConnIDs 获取所有在线连接的ID列表
+func (p *ConnectionPool) GetAllConnIDs() ([]string, error) {
+	return p.sqlitePool.GetAllConnIDs()
 }

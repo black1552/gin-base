@@ -19,7 +19,10 @@ func NewWs() *Manager {
 	}
 
 	// 2. 创建管理器
-	m := NewManager(customConfig)
+	m, err := NewManager(customConfig)
+	if err != nil {
+		log.Fatalf("Failed to create manager: %v", err)
+	}
 
 	// 3. 覆盖业务回调（核心：自定义消息处理逻辑）
 	// 连接建立回调
@@ -70,4 +73,36 @@ func main() {
 	// 5. 启动服务
 	log.Println("WebSocket服务启动：http://localhost:8080/ws")
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+// TestWebSocket 测试WebSocket连接
+func TestWebSocket() {
+	log.Println("=== 测试WebSocket连接 ===")
+	log.Println("1. 创建WebSocket管理器")
+	m, err := NewManager(DefaultConfig())
+	if err != nil {
+		log.Fatalf("创建管理器失败：%v", err)
+	}
+	log.Println("2. 管理器创建成功")
+	log.Println("3. 获取在线连接数")
+	count, err := m.sqlitePool.Count()
+	if err != nil {
+		log.Printf("获取在线连接数失败：%v", err)
+	} else {
+		log.Printf("当前在线连接数：%d", count)
+	}
+	log.Println("4. 获取所有在线连接ID")
+	connIDs, err := m.GetAllConnIDs()
+	if err != nil {
+		log.Printf("获取在线连接ID失败：%v", err)
+	} else {
+		log.Printf("在线连接ID：%v", connIDs)
+	}
+	log.Println("5. 关闭管理器")
+	if err := m.Close(); err != nil {
+		log.Printf("关闭管理器失败：%v", err)
+	} else {
+		log.Println("管理器关闭成功")
+	}
+	log.Println("=== WebSocket测试完成 ===")
 }
