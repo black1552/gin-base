@@ -17,20 +17,6 @@
             </set>
           </value>
         </entry>
-        <entry key="BadgerDB">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/db/badger.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="BadgerPool">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/pool/badger.go" />
-            </set>
-          </value>
-        </entry>
         <entry key="BaseConfig">
           <value>
             <set>
@@ -48,8 +34,6 @@
         <entry key="Config">
           <value>
             <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/db/badger.go" />
-              <option value="file://$PROJECT_DIR$/../gf-common/server/ws/websocket.go" />
               <option value="file://$PROJECT_DIR$/ws/websocket.go" />
             </set>
           </value>
@@ -57,7 +41,6 @@
         <entry key="Connection">
           <value>
             <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/server/ws/websocket.go" />
               <option value="file://$PROJECT_DIR$/ws/websocket.go" />
             </set>
           </value>
@@ -65,38 +48,14 @@
         <entry key="ConnectionInfo">
           <value>
             <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/pool/badger.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="ConnectionMeta">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/db/connection_store.go" />
+              <option value="file://$PROJECT_DIR$/pool/common.go" />
             </set>
           </value>
         </entry>
         <entry key="ConnectionPool">
           <value>
             <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/tcp/tcp.go" />
-              <option value="file://$PROJECT_DIR$/../gf-common/tcp/tcp_badger.go" />
               <option value="file://$PROJECT_DIR$/tcp/tcp.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="ConnectionPoolBadger">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/tcp/tcpConfig.go" />
-              <option value="file://$PROJECT_DIR$/../gf-common/tcp/tcp_badger.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="ConnectionStore">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/db/connection_store.go" />
             </set>
           </value>
         </entry>
@@ -131,30 +90,14 @@
         <entry key="Manager">
           <value>
             <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/server/ws/websocket.go" />
               <option value="file://$PROJECT_DIR$/ws/websocket.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="ManagerBadger">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/server/ws/websocket_badger.go" />
             </set>
           </value>
         </entry>
         <entry key="Msg">
           <value>
             <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/server/ws/websocket.go" />
               <option value="file://$PROJECT_DIR$/ws/websocket.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="OfflineMessage">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/db/connection_store.go" />
             </set>
           </value>
         </entry>
@@ -162,6 +105,13 @@
           <value>
             <set>
               <option value="file://$PROJECT_DIR$/curd/curd.go" />
+            </set>
+          </value>
+        </entry>
+        <entry key="SQLitePool">
+          <value>
+            <set>
+              <option value="file://$PROJECT_DIR$/pool/sqlite.go" />
             </set>
           </value>
         </entry>
@@ -175,8 +125,6 @@
         <entry key="TCPServer">
           <value>
             <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/tcp/tcp.go" />
-              <option value="file://$PROJECT_DIR$/../gf-common/tcp/tcp_badger.go" />
               <option value="file://$PROJECT_DIR$/tcp/tcp.go" />
             </set>
           </value>
@@ -184,7 +132,6 @@
         <entry key="TcpConnection">
           <value>
             <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/tcp/tcpConfig.go" />
               <option value="file://$PROJECT_DIR$/tcp/tcpConfig.go" />
             </set>
           </value>
@@ -192,7 +139,6 @@
         <entry key="TcpMessage">
           <value>
             <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/tcp/tcpConfig.go" />
               <option value="file://$PROJECT_DIR$/tcp/tcpConfig.go" />
             </set>
           </value>
@@ -200,7 +146,6 @@
         <entry key="TcpPoolConfig">
           <value>
             <set>
-              <option value="file://$PROJECT_DIR$/../gf-common/tcp/tcpConfig.go" />
               <option value="file://$PROJECT_DIR$/tcp/tcpConfig.go" />
             </set>
           </value>
@@ -219,140 +164,10 @@
             </set>
           </value>
         </entry>
-        <entry key="sTcp">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../yingji/socket-server/internal/service/tcp.go" />
-            </set>
-          </value>
-        </entry>
       </map>
     </option>
     <option name="scannedPathMapping">
       <map>
-        <entry key="file://$PROJECT_DIR$/../gf-common/db/badger.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772154321394" />
-              <option name="schema">
-                <list>
-                  <option value="BadgerDB" />
-                  <option value="Config" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gf-common/db/connection_store.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772154031118" />
-              <option name="schema">
-                <list>
-                  <option value="ConnectionMeta" />
-                  <option value="OfflineMessage" />
-                  <option value="ConnectionStore" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gf-common/example_badger.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772154243481" />
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gf-common/pool/badger.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772156220301" />
-              <option name="schema">
-                <list>
-                  <option value="ConnectionInfo" />
-                  <option value="BadgerPool" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gf-common/server/ws/example.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772156267433" />
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gf-common/server/ws/websocket.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772156237755" />
-              <option name="schema">
-                <list>
-                  <option value="Config" />
-                  <option value="Connection" />
-                  <option value="Manager" />
-                  <option value="Msg" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gf-common/server/ws/websocket_badger.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772154194371" />
-              <option name="schema">
-                <list>
-                  <option value="ManagerBadger" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gf-common/tcp/example.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772156261275" />
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gf-common/tcp/tcp.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772156252696" />
-              <option name="schema">
-                <list>
-                  <option value="TCPServer" />
-                  <option value="ConnectionPool" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gf-common/tcp/tcpConfig.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772154391708" />
-              <option name="schema">
-                <list>
-                  <option value="TcpPoolConfig" />
-                  <option value="TcpConnection" />
-                  <option value="TcpMessage" />
-                  <option value="ConnectionPoolBadger" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gf-common/tcp/tcp_badger.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772154435736" />
-            </ScannedPath>
-          </value>
-        </entry>
         <entry key="file://$PROJECT_DIR$/config/fun.go">
           <value>
             <ScannedPath>
@@ -456,6 +271,30 @@
             </ScannedPath>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/pool/common.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772181310902" />
+              <option name="schema">
+                <list>
+                  <option value="ConnectionInfo" />
+                </list>
+              </option>
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/pool/sqlite.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772181310902" />
+              <option name="schema">
+                <list>
+                  <option value="SQLitePool" />
+                </list>
+              </option>
+            </ScannedPath>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/response/code.go">
           <value>
             <ScannedPath>
@@ -481,14 +320,14 @@
         <entry key="file://$PROJECT_DIR$/tcp/example.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1770025697304" />
+              <option name="lastModified" value="1772159997490" />
             </ScannedPath>
           </value>
         </entry>
         <entry key="file://$PROJECT_DIR$/tcp/tcp.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1770025697304" />
+              <option name="lastModified" value="1772413469943" />
               <option name="schema">
                 <list>
                   <option value="TCPServer" />
@@ -501,7 +340,7 @@
         <entry key="file://$PROJECT_DIR$/tcp/tcpConfig.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1770025697304" />
+              <option name="lastModified" value="1772186068135" />
               <option name="schema">
                 <list>
                   <option value="TcpPoolConfig" />
@@ -548,7 +387,7 @@
         <entry key="file://$PROJECT_DIR$/ws/example.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1770025697531" />
+              <option name="lastModified" value="1772181056448" />
             </ScannedPath>
           </value>
         </entry>
@@ -567,54 +406,35 @@
             </ScannedPath>
           </value>
         </entry>
-        <entry key="file://$PROJECT_DIR$/../yingji/socket-server/internal/service/tcp.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772157204272" />
-              <option name="schema">
-                <list>
-                  <option value="sTcp" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
       </map>
     </option>
     <option name="tableStructMapping">
       <map>
         <entry key="api" value="Api" />
         <entry key="api_file" value="ApiFile" />
-        <entry key="badger_db" value="BadgerDB" />
-        <entry key="badger_pool" value="BadgerPool" />
         <entry key="base_config" value="BaseConfig" />
         <entry key="client" value="Client" />
         <entry key="config" value="Config" />
         <entry key="connection" value="Connection" />
         <entry key="connection_info" value="ConnectionInfo" />
-        <entry key="connection_meta" value="ConnectionMeta" />
         <entry key="connection_pool" value="ConnectionPool" />
-        <entry key="connection_pool_badger" value="ConnectionPoolBadger" />
-        <entry key="connection_store" value="ConnectionStore" />
         <entry key="curd" value="Curd" />
         <entry key="data_base_config" value="DataBaseConfig" />
         <entry key="jwt_claims" value="JWTClaims" />
         <entry key="jwt_config" value="JwtConfig" />
         <entry key="manager" value="Manager" />
-        <entry key="manager_badger" value="ManagerBadger" />
         <entry key="msg" value="Msg" />
-        <entry key="offline_message" value="OfflineMessage" />
         <entry key="paginate" value="Paginate" />
         <entry key="res_file" value="resFile" />
         <entry key="response" value="response" />
-        <entry key="s_tcp" value="sTcp" />
         <entry key="server_config" value="ServerConfig" />
+        <entry key="sq_lite_pool" value="SQLitePool" />
         <entry key="tcp_connection" value="TcpConnection" />
         <entry key="tcp_message" value="TcpMessage" />
         <entry key="tcp_pool_config" value="TcpPoolConfig" />
         <entry key="tcp_server" value="TCPServer" />
       </map>
     </option>
-    <option name="lastTimeChecked" value="1772152595532" />
+    <option name="lastTimeChecked" value="1772413295191" />
   </component>
 </project>

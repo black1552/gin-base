@@ -7,6 +7,11 @@ import (
 	"github.com/gogf/gf/v2/net/gtcp"
 )
 
+// 消息帧格式：4字节长度前缀 + 消息数据
+const (
+	messageLengthPrefixSize = 4 // 消息长度前缀大小（4字节）
+)
+
 // TcpPoolConfig TCP连接池配置
 type TcpPoolConfig struct {
 	BufferSize     int           `json:"bufferSize"`     // 缓冲区大小
@@ -26,6 +31,7 @@ type TcpConnection struct {
 	LastUsed  time.Time    `json:"lastUsed"`  // 最后使用时间
 	CreatedAt time.Time    `json:"createdAt"` // 创建时间
 	Mutex     sync.RWMutex `json:"-"`         // 读写锁
+	buffer    []byte       `json:"-"`         // 用于存储未处理的字节数据
 }
 
 // TcpMessage TCP消息结构
