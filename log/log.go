@@ -19,7 +19,7 @@ var (
 )
 
 func init() {
-	logPath = gfile.Join(gfile.Pwd(), "log")
+	logPath = gfile.Join(gfile.Pwd(), "logs")
 	filePath := gfile.Join(logPath, fmt.Sprintf("log-%s.log", gtime.Date()))
 	fileLogger := &lumberjack.Logger{
 		Filename:   filePath,
