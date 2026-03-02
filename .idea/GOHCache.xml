@@ -3,6 +3,13 @@
   <component name="GoORMHelperCache">
     <option name="schemaMapping">
       <map>
+        <entry key="Admin">
+          <value>
+            <set>
+              <option value="file://$PROJECT_DIR$/../gin-web-api/model/admin.go" />
+            </set>
+          </value>
+        </entry>
         <entry key="Api">
           <value>
             <set>
@@ -373,6 +380,13 @@
             </ScannedPath>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/utils/bcrypt.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772432145996" />
+            </ScannedPath>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/utils/file.go">
           <value>
             <ScannedPath>
@@ -389,6 +403,13 @@
                   <option value="JWTClaims" />
                 </list>
               </option>
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/utils/password.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772432146052" />
             </ScannedPath>
           </value>
         </entry>
@@ -435,10 +456,51 @@
             </ScannedPath>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/../gin-web-api/controller/admin/admin.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772431411888" />
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gin-web-api/main.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772431586388" />
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gin-web-api/model/admin.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772431967520" />
+              <option name="schema">
+                <list>
+                  <option value="Admin" />
+                </list>
+              </option>
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gin-web-api/router/adminRouter.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772431660377" />
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gin-web-api/router/router.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772431660370" />
+            </ScannedPath>
+          </value>
+        </entry>
       </map>
     </option>
     <option name="tableStructMapping">
       <map>
+        <entry key="admin" value="Admin" />
         <entry key="api" value="Api" />
         <entry key="api_file" value="ApiFile" />
         <entry key="base_config" value="BaseConfig" />
