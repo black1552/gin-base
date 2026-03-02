@@ -1,4 +1,4 @@
-package utils
+package crud
 
 import (
 	"context"
@@ -46,9 +46,9 @@ var pageInfo = []string{
 	"page_num",
 }
 
-// Curd -------------------------- 泛型CURD核心结构体 --------------------------
-// Curd GORM 版本的泛型CURD封装，R为对应的模型结构体
-type Curd[R any] struct {
+// Crud -------------------------- 泛型CURD核心结构体 --------------------------
+// Crud GORM 版本的泛型CURD封装，R为对应的模型结构体
+type Crud[R any] struct {
 	Dao IDao
 }
 
@@ -78,7 +78,7 @@ func caseConvert(key string, toSnake bool) string {
 }
 
 // BuildWhere -------------------------- 原BuildWhere对应实现：构建查询条件map --------------------------
-func (c Curd[R]) BuildWhere(req any, changeWhere any, subWhere any, removeFields []string, isSnake ...bool) map[string]any {
+func (c Crud[R]) BuildWhere(req any, changeWhere any, subWhere any, removeFields []string, isSnake ...bool) map[string]any {
 	// 默认使用小写下划线方式
 	toSnake := true
 	if len(isSnake) > 0 && !isSnake[0] {
@@ -170,7 +170,7 @@ func (c Curd[R]) BuildWhere(req any, changeWhere any, subWhere any, removeFields
 }
 
 // BuildMap -------------------------- 原BuildMap对应实现：构建变更条件map --------------------------
-func (c Curd[R]) BuildMap(op string, value any, field ...string) map[string]any {
+func (c Crud[R]) BuildMap(op string, value any, field ...string) map[string]any {
 	res := map[string]any{
 		"op":    op,
 		"field": "",
@@ -183,7 +183,7 @@ func (c Curd[R]) BuildMap(op string, value any, field ...string) map[string]any 
 }
 
 // ClearField -------------------------- 原ClearField对应实现：清理请求参数并返回有效map --------------------------
-func (c Curd[R]) ClearField(req any, delField []string, subField ...map[string]any) map[string]any {
+func (c Crud[R]) ClearField(req any, delField []string, subField ...map[string]any) map[string]any {
 	reqMap := convToMap(req)
 	resultMap := make(map[string]any)
 
@@ -212,7 +212,7 @@ func (c Curd[R]) ClearField(req any, delField []string, subField ...map[string]a
 }
 
 // ClearFieldPage -------------------------- 原ClearFieldPage对应实现：清理参数+分页查询 --------------------------
-func (c Curd[R]) ClearFieldPage(ctx ctx, req any, delField []string, where any, page *Paginate, order any, with bool) (items []*R, total int64, err error) {
+func (c Crud[R]) ClearFieldPage(ctx ctx, req any, delField []string, where any, page *Paginate, order any, with bool) (items []*R, total int64, err error) {
 	// 1. 清理请求参数
 	filterMap := c.ClearField(req, delField)
 
@@ -250,7 +250,7 @@ func (c Curd[R]) ClearFieldPage(ctx ctx, req any, delField []string, where any, 
 }
 
 // ClearFieldList -------------------------- 原ClearFieldList对应实现：清理参数+列表查询（不分页） --------------------------
-func (c Curd[R]) ClearFieldList(ctx ctx, req any, delField []string, where any, order any, with bool) (items []*R, err error) {
+func (c Crud[R]) ClearFieldList(ctx ctx, req any, delField []string, where any, order any, with bool) (items []*R, err error) {
 	filterMap := c.ClearField(req, delField)
 	db := c.Dao.Ctx(ctx).Model(new(R))
 
@@ -269,7 +269,7 @@ func (c Curd[R]) ClearFieldList(ctx ctx, req any, delField []string, where any, 
 }
 
 // ClearFieldOne -------------------------- 原ClearFieldOne对应实现：清理参数+单条查询 --------------------------
-func (c Curd[R]) ClearFieldOne(ctx ctx, req any, delField []string, where any, order any, with bool) (item *R, err error) {
+func (c Crud[R]) ClearFieldOne(ctx ctx, req any, delField []string, where any, order any, with bool) (item *R, err error) {
 	item = new(R)
 	filterMap := c.ClearField(req, delField)
 	db := c.Dao.Ctx(ctx).Model(item)
@@ -293,7 +293,7 @@ func (c Curd[R]) ClearFieldOne(ctx ctx, req any, delField []string, where any, o
 }
 
 // Value -------------------------- 原Value对应实现：查询单个字段值 --------------------------
-func (c Curd[R]) Value(ctx ctx, where any, field any) (interface{}, error) {
+func (c Crud[R]) Value(ctx ctx, where any, field any) (interface{}, error) {
 	var result interface{}
 	db := c.Dao.Ctx(ctx).Model(new(R)).Where(where)
 
@@ -317,7 +317,7 @@ func (c Curd[R]) Value(ctx ctx, where any, field any) (interface{}, error) {
 }
 
 // DeletePri -------------------------- 原DeletePri对应实现：按主键删除 --------------------------
-func (c Curd[R]) DeletePri(ctx ctx, primaryKey any) error {
+func (c Crud[R]) DeletePri(ctx ctx, primaryKey any) error {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 	// 按主键字段构建查询
 	pk := c.Dao.PrimaryKey()
@@ -328,12 +328,12 @@ func (c Curd[R]) DeletePri(ctx ctx, primaryKey any) error {
 }
 
 // DeleteWhere -------------------------- 原DeleteWhere对应实现：按条件删除 --------------------------
-func (c Curd[R]) DeleteWhere(ctx ctx, where any) error {
+func (c Crud[R]) DeleteWhere(ctx ctx, where any) error {
 	return c.Dao.Ctx(ctx).Model(new(R)).Where(where).Delete(new(R)).Error
 }
 
 // Sum -------------------------- 原Sum对应实现：字段求和 --------------------------
-func (c Curd[R]) Sum(ctx ctx, where any, field string) float64 {
+func (c Crud[R]) Sum(ctx ctx, where any, field string) float64 {
 	var sum float64
 	if field == "" {
 		panic("求和字段不能为空")
@@ -347,7 +347,7 @@ func (c Curd[R]) Sum(ctx ctx, where any, field string) float64 {
 }
 
 // ArrayField -------------------------- 原ArrayField对应实现：查询指定字段数组 --------------------------
-func (c Curd[R]) ArrayField(ctx ctx, where any, field any) []interface{} {
+func (c Crud[R]) ArrayField(ctx ctx, where any, field any) []interface{} {
 	var result []interface{}
 	db := c.Dao.Ctx(ctx).Model(new(R)).Where(where)
 
@@ -371,7 +371,7 @@ func (c Curd[R]) ArrayField(ctx ctx, where any, field any) []interface{} {
 }
 
 // FindPri -------------------------- 原FindPri对应实现：按主键查询单条记录 --------------------------
-func (c Curd[R]) FindPri(ctx ctx, primaryKey any, with bool) (model *R) {
+func (c Crud[R]) FindPri(ctx ctx, primaryKey any, with bool) (model *R) {
 	model = new(R)
 	db := c.Dao.Ctx(ctx).Model(model)
 	pk := c.Dao.PrimaryKey()
@@ -392,7 +392,7 @@ func (c Curd[R]) FindPri(ctx ctx, primaryKey any, with bool) (model *R) {
 }
 
 // -------------------------- 原First对应实现：按条件查询第一条记录 --------------------------
-func (c Curd[R]) First(ctx ctx, where any, order any, with bool) (model *R) {
+func (c Crud[R]) First(ctx ctx, where any, order any, with bool) (model *R) {
 	model = new(R)
 	db := c.Dao.Ctx(ctx).Model(model)
 
@@ -414,7 +414,7 @@ func (c Curd[R]) First(ctx ctx, where any, order any, with bool) (model *R) {
 }
 
 // -------------------------- 原Exists对应实现：判断记录是否存在 --------------------------
-func (c Curd[R]) Exists(ctx ctx, where any) (exists bool) {
+func (c Crud[R]) Exists(ctx ctx, where any) (exists bool) {
 	var count int64
 	err := c.Dao.Ctx(ctx).Model(new(R)).Where(where).Count(&count).Error
 	if err != nil {
@@ -424,7 +424,7 @@ func (c Curd[R]) Exists(ctx ctx, where any) (exists bool) {
 }
 
 // -------------------------- 原All对应实现：查询所有符合条件的记录 --------------------------
-func (c Curd[R]) All(ctx ctx, where any, order any, with bool) (items []*R) {
+func (c Crud[R]) All(ctx ctx, where any, order any, with bool) (items []*R) {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 
 	if with {
@@ -445,7 +445,7 @@ func (c Curd[R]) All(ctx ctx, where any, order any, with bool) (items []*R) {
 }
 
 // -------------------------- 原Count对应实现：统计记录总数 --------------------------
-func (c Curd[R]) Count(ctx ctx, where any) (count int64) {
+func (c Crud[R]) Count(ctx ctx, where any) (count int64) {
 	err := c.Dao.Ctx(ctx).Model(new(R)).Where(where).Count(&count).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		panic(fmt.Sprintf("Count查询错误: %v", err))
@@ -454,7 +454,7 @@ func (c Curd[R]) Count(ctx ctx, where any) (count int64) {
 }
 
 // -------------------------- 原Save对应实现：新增/更新记录（对应GORM的Save） --------------------------
-func (c Curd[R]) Save(ctx ctx, data any) {
+func (c Crud[R]) Save(ctx ctx, data any) {
 	err := c.Dao.Ctx(ctx).Model(new(R)).Create(data).Error
 	if err != nil {
 		panic(fmt.Sprintf("Save保存错误: %v", err))
@@ -462,7 +462,7 @@ func (c Curd[R]) Save(ctx ctx, data any) {
 }
 
 // -------------------------- 原Update对应实现：按条件更新记录 --------------------------
-func (c Curd[R]) Update(ctx ctx, where any, data any) (count int64) {
+func (c Crud[R]) Update(ctx ctx, where any, data any) (count int64) {
 	result := c.Dao.Ctx(ctx).Model(new(R)).Where(where).Updates(data)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		panic(fmt.Sprintf("Update更新错误: %v", result.Error.Error()))
@@ -471,7 +471,7 @@ func (c Curd[R]) Update(ctx ctx, where any, data any) (count int64) {
 }
 
 // -------------------------- 原UpdatePri对应实现：按主键更新记录 --------------------------
-func (c Curd[R]) UpdatePri(ctx ctx, primaryKey any, data any) (count int64) {
+func (c Crud[R]) UpdatePri(ctx ctx, primaryKey any, data any) (count int64) {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 	pk := c.Dao.PrimaryKey()
 
@@ -487,7 +487,7 @@ func (c Curd[R]) UpdatePri(ctx ctx, primaryKey any, data any) (count int64) {
 }
 
 // -------------------------- 原Paginate对应实现：分页查询 --------------------------
-func (c Curd[R]) Paginate(ctx context.Context, where any, p Paginate, with bool, order any) (items []*R, total int64) {
+func (c Crud[R]) Paginate(ctx context.Context, where any, p Paginate, with bool, order any) (items []*R, total int64) {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 
 	// 1. 构建查询条件

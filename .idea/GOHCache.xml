@@ -59,9 +59,17 @@
             </set>
           </value>
         </entry>
+        <entry key="Crud">
+          <value>
+            <set>
+              <option value="file://$PROJECT_DIR$/crud/curd.go" />
+            </set>
+          </value>
+        </entry>
         <entry key="Curd">
           <value>
             <set>
+              <option value="file://$PROJECT_DIR$/crud/curd.go" />
               <option value="file://$PROJECT_DIR$/curd/curd.go" />
             </set>
           </value>
@@ -104,6 +112,7 @@
         <entry key="Paginate">
           <value>
             <set>
+              <option value="file://$PROJECT_DIR$/crud/curd.go" />
               <option value="file://$PROJECT_DIR$/curd/curd.go" />
             </set>
           </value>
@@ -192,6 +201,19 @@
                   <option value="ServerConfig" />
                   <option value="DataBaseConfig" />
                   <option value="JwtConfig" />
+                </list>
+              </option>
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/crud/curd.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772421491111" />
+              <option name="schema">
+                <list>
+                  <option value="Paginate" />
+                  <option value="Crud" />
                 </list>
               </option>
             </ScannedPath>
@@ -340,7 +362,7 @@
         <entry key="file://$PROJECT_DIR$/tcp/tcpConfig.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1772186068135" />
+              <option name="lastModified" value="1772413520343" />
               <option name="schema">
                 <list>
                   <option value="TcpPoolConfig" />
@@ -418,6 +440,7 @@
         <entry key="connection" value="Connection" />
         <entry key="connection_info" value="ConnectionInfo" />
         <entry key="connection_pool" value="ConnectionPool" />
+        <entry key="crud" value="Crud" />
         <entry key="curd" value="Curd" />
         <entry key="data_base_config" value="DataBaseConfig" />
         <entry key="jwt_claims" value="JWTClaims" />
