@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 
+	"github.com/gogf/gf/v2/crypto/gmd5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,4 +21,12 @@ func ValidPassword(hashPassword, password string) error {
 		return fmt.Errorf("密码不匹配:%v", err)
 	}
 	return nil
+}
+
+func Md5Password(password string) string {
+	md5pass, err := gmd5.EncryptString(password)
+	if err != nil {
+		return ""
+	}
+	return md5pass
 }
