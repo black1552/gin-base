@@ -48,10 +48,10 @@ func NewTCPServer(address string, config *TcpPoolConfig) (*TCPServer, error) {
 	// 初始化SQLite连接池
 	sqlitePool, err := pool.NewSQLitePool()
 	if err != nil {
-		return nil, fmt.Errorf("failed to create sqlite pool: %w", err)
+		return nil, fmt.Errorf("failed to create sqlite connPool: %w", err)
 	}
 
-	pool := &ConnectionPool{
+	connPool := &ConnectionPool{
 		connections: make(map[string]*TcpConnection),
 		sqlitePool:  sqlitePool,
 		config:      config,
@@ -61,7 +61,7 @@ func NewTCPServer(address string, config *TcpPoolConfig) (*TCPServer, error) {
 	server := &TCPServer{
 		Address:    address,
 		Config:     config,
-		Connection: pool,
+		Connection: connPool,
 		Logger:     logger,
 		ctx:        ctx,
 		cancel:     cancel,
