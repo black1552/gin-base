@@ -3,13 +3,6 @@
   <component name="GoORMHelperCache">
     <option name="schemaMapping">
       <map>
-        <entry key="Admin">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin-web-api/model/admin.go" />
-            </set>
-          </value>
-        </entry>
         <entry key="Api">
           <value>
             <set>
@@ -73,14 +66,6 @@
             </set>
           </value>
         </entry>
-        <entry key="Curd">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/crud/curd.go" />
-              <option value="file://$PROJECT_DIR$/curd/curd.go" />
-            </set>
-          </value>
-        </entry>
         <entry key="DataBaseConfig">
           <value>
             <set>
@@ -120,7 +105,6 @@
           <value>
             <set>
               <option value="file://$PROJECT_DIR$/crud/curd.go" />
-              <option value="file://$PROJECT_DIR$/curd/curd.go" />
             </set>
           </value>
         </entry>
@@ -221,19 +205,6 @@
                 <list>
                   <option value="Paginate" />
                   <option value="Crud" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/curd/curd.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1770362565302" />
-              <option name="schema">
-                <list>
-                  <option value="Paginate" />
-                  <option value="Curd" />
                 </list>
               </option>
             </ScannedPath>
@@ -390,7 +361,7 @@
         <entry key="file://$PROJECT_DIR$/utils/file.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1769850381300" />
+              <option name="lastModified" value="1772592717105" />
             </ScannedPath>
           </value>
         </entry>
@@ -403,13 +374,6 @@
                   <option value="JWTClaims" />
                 </list>
               </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/utils/password.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772432146052" />
             </ScannedPath>
           </value>
         </entry>
@@ -456,51 +420,10 @@
             </ScannedPath>
           </value>
         </entry>
-        <entry key="file://$PROJECT_DIR$/../gin-web-api/controller/admin/admin.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772431411888" />
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin-web-api/main.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772431586388" />
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin-web-api/model/admin.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772431967520" />
-              <option name="schema">
-                <list>
-                  <option value="Admin" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin-web-api/router/adminRouter.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772431660377" />
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin-web-api/router/router.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772431660370" />
-            </ScannedPath>
-          </value>
-        </entry>
       </map>
     </option>
     <option name="tableStructMapping">
       <map>
-        <entry key="admin" value="Admin" />
         <entry key="api" value="Api" />
         <entry key="api_file" value="ApiFile" />
         <entry key="base_config" value="BaseConfig" />
@@ -510,7 +433,6 @@
         <entry key="connection_info" value="ConnectionInfo" />
         <entry key="connection_pool" value="ConnectionPool" />
         <entry key="crud" value="Crud" />
-        <entry key="curd" value="Curd" />
         <entry key="data_base_config" value="DataBaseConfig" />
         <entry key="jwt_claims" value="JWTClaims" />
         <entry key="jwt_config" value="JwtConfig" />
@@ -527,6 +449,6 @@
         <entry key="tcp_server" value="TCPServer" />
       </map>
     </option>
-    <option name="lastTimeChecked" value="1772413295191" />
+    <option name="lastTimeChecked" value="1772592078880" />
   </component>
 </project>
