@@ -242,7 +242,7 @@
         <entry key="file://$PROJECT_DIR$/crud/curd.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1772608170073" />
+              <option name="lastModified" value="1772675013830" />
               <option name="schema">
                 <list>
                   <option value="Paginate" />
@@ -465,7 +465,7 @@
         <entry key="file://$PROJECT_DIR$/../gin_test/controller/home/index.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1772606534126" />
+              <option name="lastModified" value="1772608689818" />
             </ScannedPath>
           </value>
         </entry>

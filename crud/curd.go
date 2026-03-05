@@ -212,14 +212,17 @@ func (c Crud[R]) ClearField(req any, delField []string, subField ...map[string]a
 }
 
 // ClearFieldPage -------------------------- 原ClearFieldPage对应实现：清理参数+分页查询 --------------------------
-func (c Crud[R]) ClearFieldPage(ctx ctx, req any, delField []string, where any, page *Paginate, order any, with string) (items []*R, total int64, err error) {
+func (c Crud[R]) ClearFieldPage(ctx ctx, req any, delField []string, where any, page *Paginate, order any, with map[string]func(db gorm.PreloadBuilder) error) (items []*R, total int64, err error) {
 	// 1. 清理请求参数
 	filterMap := c.ClearField(req, delField)
 
 	// 2. 初始化GORM查询
 	db := c.Dao.Ctx(ctx)
-	if with != "" {
-		db = db.Preload(with) // GORM 关联查询全部，对应GF的WithAll()
+
+	if with != nil {
+		for k, v := range with {
+			db = db.Preload(k, v)
+		}
 	}
 
 	// 3. 构建查询条件
@@ -250,12 +253,14 @@ func (c Crud[R]) ClearFieldPage(ctx ctx, req any, delField []string, where any, 
 }
 
 // ClearFieldList -------------------------- 原ClearFieldList对应实现：清理参数+列表查询（不分页） --------------------------
-func (c Crud[R]) ClearFieldList(ctx ctx, req any, delField []string, where any, order any, with string) (items []*R, err error) {
+func (c Crud[R]) ClearFieldList(ctx ctx, req any, delField []string, where any, order any, with map[string]func(db gorm.PreloadBuilder) error) (items []*R, err error) {
 	filterMap := c.ClearField(req, delField)
 	db := c.Dao.Ctx(ctx).Model(new(R))
 
-	if with != "" {
-		db = db.Preload(with)
+	if with != nil {
+		for k, v := range with {
+			db = db.Preload(k, v)
+		}
 	}
 	if where != nil {
 		db = db.Where(where)
@@ -269,13 +274,15 @@ func (c Crud[R]) ClearFieldList(ctx ctx, req any, delField []string, where any, 
 }
 
 // ClearFieldOne -------------------------- 原ClearFieldOne对应实现：清理参数+单条查询 --------------------------
-func (c Crud[R]) ClearFieldOne(ctx ctx, req any, delField []string, where any, order any, with string) (item *R, err error) {
+func (c Crud[R]) ClearFieldOne(ctx ctx, req any, delField []string, where any, order any, with map[string]func(db gorm.PreloadBuilder) error) (item *R, err error) {
 	item = new(R)
 	filterMap := c.ClearField(req, delField)
 	db := c.Dao.Ctx(ctx).Model(item)
 
-	if with != "" {
-		db = db.Preload(with)
+	if with != nil {
+		for k, v := range with {
+			db = db.Preload(k, v)
+		}
 	}
 	if where != nil {
 		db = db.Where(where)
@@ -371,7 +378,7 @@ func (c Crud[R]) ArrayField(ctx ctx, where any, field any) []interface{} {
 }
 
 // FindPri -------------------------- 原FindPri对应实现：按主键查询单条记录 --------------------------
-func (c Crud[R]) FindPri(ctx ctx, primaryKey any, with string) (model *R) {
+func (c Crud[R]) FindPri(ctx ctx, primaryKey any, with map[string]func(db gorm.PreloadBuilder) error) (model *R) {
 	model = new(R)
 	db := c.Dao.Ctx(ctx).Model(model)
 	pk := c.Dao.PrimaryKey()
@@ -379,8 +386,10 @@ func (c Crud[R]) FindPri(ctx ctx, primaryKey any, with string) (model *R) {
 	if pk == "" {
 		panic("主键字段未配置")
 	}
-	if with != "" {
-		db = db.Preload(with)
+	if with != nil {
+		for k, v := range with {
+			db = db.Preload(k, v)
+		}
 	}
 
 	// 按主键查询
@@ -392,12 +401,14 @@ func (c Crud[R]) FindPri(ctx ctx, primaryKey any, with string) (model *R) {
 }
 
 // -------------------------- 原First对应实现：按条件查询第一条记录 --------------------------
-func (c Crud[R]) First(ctx ctx, where any, order any, with string) (model *R) {
+func (c Crud[R]) First(ctx ctx, where any, order any, with map[string]func(db gorm.PreloadBuilder) error) (model *R) {
 	model = new(R)
 	db := c.Dao.Ctx(ctx).Model(model)
 
-	if with != "" {
-		db = db.Preload(with)
+	if with != nil {
+		for k, v := range with {
+			db = db.Preload(k, v)
+		}
 	}
 	if where != nil {
 		db = db.Where(where)
@@ -424,11 +435,13 @@ func (c Crud[R]) Exists(ctx ctx, where any) (exists bool) {
 }
 
 // -------------------------- 原All对应实现：查询所有符合条件的记录 --------------------------
-func (c Crud[R]) All(ctx ctx, where any, order any, with string) (items []*R) {
+func (c Crud[R]) All(ctx ctx, where any, order any, with map[string]func(db gorm.PreloadBuilder) error) (items []*R) {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 
-	if with != "" {
-		db = db.Preload(with)
+	if with != nil {
+		for k, v := range with {
+			db = db.Preload(k, v)
+		}
 	}
 	if where != nil {
 		db = db.Where(where)
@@ -487,7 +500,7 @@ func (c Crud[R]) UpdatePri(ctx ctx, primaryKey any, data any) (count int64) {
 }
 
 // -------------------------- 原Paginate对应实现：分页查询 --------------------------
-func (c Crud[R]) Paginate(ctx context.Context, where any, p Paginate, with string, order any) (items []*R, total int64) {
+func (c Crud[R]) Paginate(ctx context.Context, where any, p Paginate, with map[string]func(db gorm.PreloadBuilder) error, order any) (items []*R, total int64) {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 
 	// 1. 构建查询条件
@@ -501,8 +514,10 @@ func (c Crud[R]) Paginate(ctx context.Context, where any, p Paginate, with strin
 	}
 
 	// 3. 关联查询
-	if with != "" {
-		db = db.Preload(with)
+	if with != nil {
+		for k, v := range with {
+			db = db.Preload(k, v)
+		}
 	}
 
 	// 4. 排序
