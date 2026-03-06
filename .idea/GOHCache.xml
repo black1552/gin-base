@@ -101,13 +101,6 @@
             </set>
           </value>
         </entry>
-        <entry key="News">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/model/news.go" />
-            </set>
-          </value>
-        </entry>
         <entry key="Paginate">
           <value>
             <set>
@@ -157,10 +150,11 @@
             </set>
           </value>
         </entry>
-        <entry key="User">
+        <entry key="logWriter">
           <value>
             <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/model/user.go" />
+              <option value="file://$PROJECT_DIR$/log/log.go" />
+              <option value="file://$PROJECT_DIR$/../yingji/api-gateway/internal/utils/log.go" />
             </set>
           </value>
         </entry>
@@ -175,34 +169,6 @@
           <value>
             <set>
               <option value="file://$PROJECT_DIR$/response/code.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="sNewsDao">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/model/dao/newsDao.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="sNewsDb">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/service/news.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="sUser">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/service/user.go" />
-            </set>
-          </value>
-        </entry>
-        <entry key="sUserDao">
-          <value>
-            <set>
-              <option value="file://$PROJECT_DIR$/../gin_test/model/dao/userDao.go" />
             </set>
           </value>
         </entry>
@@ -283,7 +249,12 @@
         <entry key="file://$PROJECT_DIR$/log/log.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1772420020488" />
+              <option name="lastModified" value="1772763464061" />
+              <option name="schema">
+                <list>
+                  <option value="logWriter" />
+                </list>
+              </option>
             </ScannedPath>
           </value>
         </entry>
@@ -462,87 +433,20 @@
             </ScannedPath>
           </value>
         </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/controller/home/index.go">
+        <entry key="file://$PROJECT_DIR$/../yingji/api-gateway/internal/cmd/cmd.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1772608689818" />
+              <option name="lastModified" value="1772762475609" />
             </ScannedPath>
           </value>
         </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/migrate/migrate.go">
+        <entry key="file://$PROJECT_DIR$/../yingji/api-gateway/internal/utils/log.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1772607808155" />
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/model/dao/newsDao.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772605092268" />
+              <option name="lastModified" value="1772763430097" />
               <option name="schema">
                 <list>
-                  <option value="sNewsDao" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/model/dao/userDao.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772605102821" />
-              <option name="schema">
-                <list>
-                  <option value="sUserDao" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/model/news.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772607773437" />
-              <option name="schema">
-                <list>
-                  <option value="News" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/model/user.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772606080031" />
-              <option name="schema">
-                <list>
-                  <option value="User" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/service/news.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772593137875" />
-              <option name="schema">
-                <list>
-                  <option value="sNewsDb" />
-                </list>
-              </option>
-            </ScannedPath>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/../gin_test/service/user.go">
-          <value>
-            <ScannedPath>
-              <option name="lastModified" value="1772593163860" />
-              <option name="schema">
-                <list>
-                  <option value="sUser" />
+                  <option value="logWriter" />
                 </list>
               </option>
             </ScannedPath>
@@ -564,25 +468,20 @@
         <entry key="data_base_config" value="DataBaseConfig" />
         <entry key="jwt_claims" value="JWTClaims" />
         <entry key="jwt_config" value="JwtConfig" />
+        <entry key="log_writer" value="logWriter" />
         <entry key="manager" value="Manager" />
         <entry key="msg" value="Msg" />
-        <entry key="news" value="News" />
         <entry key="paginate" value="Paginate" />
         <entry key="res_file" value="resFile" />
         <entry key="response" value="response" />
-        <entry key="s_news_dao" value="sNewsDao" />
-        <entry key="s_news_db" value="sNewsDb" />
-        <entry key="s_user" value="sUser" />
-        <entry key="s_user_dao" value="sUserDao" />
         <entry key="server_config" value="ServerConfig" />
         <entry key="sq_lite_pool" value="SQLitePool" />
         <entry key="tcp_connection" value="TcpConnection" />
         <entry key="tcp_message" value="TcpMessage" />
         <entry key="tcp_pool_config" value="TcpPoolConfig" />
         <entry key="tcp_server" value="TCPServer" />
-        <entry key="user" value="User" />
       </map>
     </option>
-    <option name="lastTimeChecked" value="1772592078880" />
+    <option name="lastTimeChecked" value="1772761874263" />
   </component>
 </project>
