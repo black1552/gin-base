@@ -3,7 +3,7 @@ module git.magicany.cc/black1552/gin-base
 go 1.25.0
 
 require (
-	git.magicany.cc/black1552/gf-common v1.0.1010
+	git.magicany.cc/black1552/gf-common v1.0.1011
 	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gin-gonic/gin v1.12.0

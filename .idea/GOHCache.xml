@@ -153,6 +153,7 @@
         <entry key="logWriter">
           <value>
             <set>
+              <option value="file://$PROJECT_DIR$/../gf-common/log/log.go" />
               <option value="file://$PROJECT_DIR$/log/log.go" />
               <option value="file://$PROJECT_DIR$/../yingji/api-gateway/internal/utils/log.go" />
             </set>
@@ -176,6 +177,25 @@
     </option>
     <option name="scannedPathMapping">
       <map>
+        <entry key="file://$PROJECT_DIR$/../gf-common/log/log.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772763640548" />
+              <option name="schema">
+                <list>
+                  <option value="logWriter" />
+                </list>
+              </option>
+            </ScannedPath>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/../gf-common/server/gateway.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772764256932" />
+            </ScannedPath>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/config/fun.go">
           <value>
             <ScannedPath>
@@ -323,6 +343,13 @@
             </ScannedPath>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/server/gateway.go">
+          <value>
+            <ScannedPath>
+              <option name="lastModified" value="1772764771892" />
+            </ScannedPath>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/server/server.go">
           <value>
             <ScannedPath>
@@ -436,7 +463,7 @@
         <entry key="file://$PROJECT_DIR$/../yingji/api-gateway/internal/cmd/cmd.go">
           <value>
             <ScannedPath>
-              <option name="lastModified" value="1772762475609" />
+              <option name="lastModified" value="1772763999954" />
             </ScannedPath>
           </value>
         </entry>

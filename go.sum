@@ -1,7 +1,7 @@
 filippo.io/edwards25519 v1.1.1 h1:YpjwWWlNmGIDyXOn8zLzqiD+9TyIlPhGFG96P39uBpw=
 filippo.io/edwards25519 v1.1.1/go.mod h1:BxyFTGdWcka3PhytdK4V28tE5sGfRvvvRV7EaN4VDT4=
-git.magicany.cc/black1552/gf-common v1.0.1010 h1:HCSxfSpmvcjUw6KcsuEpWAMxxxiq+K73VsA2lHThkTo=
-git.magicany.cc/black1552/gf-common v1.0.1010/go.mod h1:TRyOXXb0no1RqiCtbVgg7/V7+v3m6dlS0Sg6fcfKOgw=
+git.magicany.cc/black1552/gf-common v1.0.1011 h1:utJu6F5xTi/Wbr19cXvVN3xi75nbqS3QE0U8sp8naFo=
+git.magicany.cc/black1552/gf-common v1.0.1011/go.mod h1:TRyOXXb0no1RqiCtbVgg7/V7+v3m6dlS0Sg6fcfKOgw=
 github.com/BurntSushi/toml v1.6.0 h1:dRaEfpa2VI55EwlIW72hMRHdWouJeRF7TPYhI+AUQjk=
 github.com/BurntSushi/toml v1.6.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/bytedance/gopkg v0.1.3 h1:TPBSwH8RsouGCBcMBktLt1AymVo2TVsBVCY4b6TnZ/M=
