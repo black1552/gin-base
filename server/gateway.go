@@ -10,6 +10,7 @@ import (
 )
 
 // BuildRequest 创建 HTTP 反向代理 Handler
+// 支持 HTTP 和 WebSocket 协议
 // @Param host 目标服务器地址，例如 "http://127.0.0.1:8081"
 func BuildRequest(host string) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -17,7 +18,6 @@ func BuildRequest(host string) gin.HandlerFunc {
 		if err != nil {
 			log.Error("parse target host error:", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid target host"})
-			c.Abort()
 			return
 		}
 
@@ -37,10 +37,9 @@ func BuildRequest(host string) gin.HandlerFunc {
 		// 处理代理错误
 		proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
 			log.Error("proxy error:", err)
-			c.JSON(http.StatusBadGateway, gin.H{"error": "proxy error: " + err.Error()})
+			http.Error(w, "proxy error: "+err.Error(), http.StatusBadGateway)
 		}
 
 		proxy.ServeHTTP(c.Writer, c.Request)
-		c.Abort()
 	}
 }
