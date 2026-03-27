@@ -169,7 +169,7 @@ func (c Crud[R]) BuildWhere(req any, changeWhere any, subWhere any, removeFields
 	return resultMap
 }
 
-// BuildMap -------------------------- 原BuildMap对应实现：构建变更条件map --------------------------
+// BuildMap -------------------------- 原 BuildMap 对应实现：构建变更条件 map --------------------------
 func (c Crud[R]) BuildMap(op string, value any, field ...string) map[string]any {
 	res := map[string]any{
 		"op":    op,
@@ -180,6 +180,212 @@ func (c Crud[R]) BuildMap(op string, value any, field ...string) map[string]any 
 		res["field"] = field[0]
 	}
 	return res
+}
+
+// WhereCondition -------------------------- AND/OR 查询条件结构体 --------------------------
+// WhereCondition 用于构建复杂的 AND/OR 查询条件
+type WhereCondition struct {
+	AND []interface{} // AND 条件列表
+	OR  []interface{} // OR 条件列表
+}
+
+// BuildWhereAndOr -------------------------- 新增：支持 AND 和 OR 的查询条件构建 --------------------------
+// BuildWhereAndOr 构建支持 AND 和 OR 混合使用的查询条件
+// 用法示例：
+//
+//	where := crud.BuildWhereAndOr().
+//	  AND(map[string]any{"status": 1}).
+//	  OR(
+//	    map[string]any{"age": 18},
+//	    map[string]any{"name": "test"},
+//	  ).
+//	  AND(map[string]any{"deleted": 0}).
+//	  Build()
+func (c Crud[R]) BuildWhereAndOr() *WhereBuilder[R] {
+	return &WhereBuilder[R]{
+		conditions: make([]WhereCondition, 0),
+		crud:       c,
+	}
+}
+
+// WhereBuilder -------------------------- WHERE 条件构建器 --------------------------
+// WhereBuilder 流式构建 WHERE 条件（R 为模型类型参数）
+type WhereBuilder[R any] struct {
+	conditions []WhereCondition
+	crud       Crud[R]
+}
+
+// AND 添加 AND 条件
+func (wb *WhereBuilder[R]) AND(conditions ...interface{}) *WhereBuilder[R] {
+	if len(conditions) > 0 {
+		wb.conditions = append(wb.conditions, WhereCondition{
+			AND: conditions,
+		})
+	}
+	return wb
+}
+
+// OR 添加 OR 条件（OR 条件内部是或关系）
+func (wb *WhereBuilder[R]) OR(conditions ...interface{}) *WhereBuilder[R] {
+	if len(conditions) > 0 {
+		wb.conditions = append(wb.conditions, WhereCondition{
+			OR: conditions,
+		})
+	}
+	return wb
+}
+
+// Build 构建最终的查询条件
+// 返回格式：map[string]any 或者可以直接用于 GORM 的 Where 子句
+func (wb *WhereBuilder[R]) Build() interface{} {
+	if len(wb.conditions) == 0 {
+		return nil
+	}
+
+	// 如果只有一个条件组，直接返回
+	if len(wb.conditions) == 1 {
+		cond := wb.conditions[0]
+		if len(cond.AND) == 1 && len(cond.OR) == 0 {
+			return cond.AND[0]
+		}
+		if len(cond.OR) > 0 && len(cond.AND) == 0 {
+			return wb.buildORCondition(cond.OR)
+		}
+	}
+
+	// 构建复杂的 AND/OR 混合条件
+	var andConditions []interface{}
+
+	for _, cond := range wb.conditions {
+		// 处理 AND 条件
+		for _, andCond := range cond.AND {
+			andConditions = append(andConditions, andCond)
+		}
+
+		// 处理 OR 条件（将 OR 条件作为一个整体添加到 AND 中）
+		if len(cond.OR) > 0 {
+			orCondition := wb.buildORCondition(cond.OR)
+			andConditions = append(andConditions, orCondition)
+		}
+	}
+
+	// 如果只有一个条件，直接返回
+	if len(andConditions) == 1 {
+		return andConditions[0]
+	}
+
+	// 返回 AND 条件数组
+	return andConditions
+}
+
+// buildORCondition 构建 OR 条件
+func (wb *WhereBuilder[R]) buildORCondition(orConds []interface{}) map[string]interface{} {
+	if len(orConds) == 0 {
+		return nil
+	}
+
+	// 如果只有一个 OR 条件，直接返回
+	if len(orConds) == 1 {
+		return map[string]interface{}{
+			"OR": orConds[0],
+		}
+	}
+
+	// 多个 OR 条件
+	return map[string]interface{}{
+		"OR": orConds,
+	}
+}
+
+// BuildWhereGORM -------------------------- 新增：GORM 原生语法构建 WHERE 条件（支持 AND/OR） --------------------------
+// BuildWhereGORM 使用 GORM 原生语法构建复杂的 AND/OR 查询条件
+// 用法示例 1 - 纯 AND 条件：
+//
+//	db.Where("age > ?", 18).Where("status = ?", 1)
+//
+// 用法示例 2 - OR 条件：
+//
+//	db.Where(db.Where("name = ?", "john").Or("name = ?", "jane"))
+//
+// 用法示例 3 - 混合使用：
+//
+//	db.Where("status = ?", 1).
+//	  Where(db.Where("age >= ?", 18).Or("age < ? AND vip = ?", 18, true)).
+//	  Find(&users)
+func (c Crud[R]) BuildWhereGORM(query interface{}, args ...interface{}) *GORMWhereBuilder[R] {
+	return &GORMWhereBuilder[R]{
+		DB:    c.Dao.DB(),
+		crud:  c,
+		query: query,
+		args:  args,
+	}
+}
+
+// GORMWhereBuilder -------------------------- GORM 原生 WHERE 构建器 --------------------------
+// GORMWhereBuilder 使用 GORM 原生 API 构建复杂查询（R 为模型类型参数）
+type GORMWhereBuilder[R any] struct {
+	*gorm.DB
+	crud  Crud[R]
+	query interface{}
+	args  []interface{}
+}
+
+// Where 添加 WHERE 条件（AND 关系）
+func (gwb *GORMWhereBuilder[R]) Where(query interface{}, args ...interface{}) *GORMWhereBuilder[R] {
+	// 如果当前已经有查询条件，先应用
+	if gwb.query != nil {
+		gwb = gwb.Where(gwb.query, gwb.args...)
+		gwb.query = nil
+		gwb.args = nil
+	}
+	return gwb.Where(query, args...)
+}
+
+// Or 添加 OR 条件
+func (gwb *GORMWhereBuilder[R]) Or(query interface{}, args ...interface{}) *GORMWhereBuilder[R] {
+	// 如果当前有未应用的查询条件，先应用
+	if gwb.query != nil {
+		gwb = gwb.Where(gwb.query, gwb.args...)
+		gwb.query = nil
+		gwb.args = nil
+	}
+	return gwb.Or(query, args...)
+}
+
+// Not 添加 NOT 条件
+func (gwb *GORMWhereBuilder[R]) Not(query interface{}, args ...interface{}) *GORMWhereBuilder[R] {
+	if gwb.query != nil {
+		gwb = gwb.Where(gwb.query, gwb.args...)
+		gwb.query = nil
+		gwb.args = nil
+	}
+	gwb = gwb.Not(query, args...)
+	return gwb
+}
+
+// Find 执行查询并返回结果
+func (gwb *GORMWhereBuilder[R]) Find(items interface{}) error {
+	// 应用剩余的查询条件
+	if gwb.query != nil {
+		gwb = gwb.Where(gwb.query, gwb.args...)
+	}
+	return gwb.Model(new(R)).Find(items).Error
+}
+
+// First 查询第一条记录
+func (gwb *GORMWhereBuilder[R]) First(result interface{}) error {
+	if gwb.query != nil {
+		gwb = gwb.Where(gwb.query, gwb.args...)
+	}
+	return gwb.Model(new(R)).First(result).Error
+}
+
+// Count 统计记录数
+func (gwb *GORMWhereBuilder[R]) Count(count *int64) error {
+	if gwb.query != nil {
+		gwb = gwb.Where(gwb.query, gwb.args...)
+	}
+	return gwb.Model(new(R)).Count(count).Error
 }
 
 // ClearField -------------------------- 原ClearField对应实现：清理请求参数并返回有效map --------------------------
