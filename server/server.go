@@ -33,8 +33,9 @@ func New() *gin.Engine {
 // @Param *gin.Engine 路由实例
 // 设置监听挂壁
 func Run(g *gin.Engine) {
+	addr := config.GetConfigValue("server.addr", ":8080").String()
 	s := &http.Server{
-		Addr:              config.GetConfigValue("server.addr", ":8080").String(),
+		Addr:              addr,
 		Handler:           g,
 		ReadTimeout:       60 * time.Second,
 		ReadHeaderTimeout: 60 * time.Second,
@@ -44,7 +45,14 @@ func Run(g *gin.Engine) {
 	}
 	go func() {
 		if err := s.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Error("服务器启动失败:", err)
+			// 检查是否是端口被占用的错误
+			if strings.Contains(err.Error(), "address already in use") ||
+				strings.Contains(err.Error(), "Only one usage of each socket address") {
+				log.Error(fmt.Sprintf("服务器启动失败：%s 端口已被占用，请检查是否有其他程序正在使用该端口", addr))
+			} else {
+				log.Error("服务器启动失败:", err)
+			}
+			os.Exit(1) // 启动失败则退出程序
 		}
 	}()
 	log.Info("服务器启动成功....")
