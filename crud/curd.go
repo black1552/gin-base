@@ -48,7 +48,7 @@ var pageInfo = []string{
 }
 
 // Crud -------------------------- 泛型CURD核心结构体 --------------------------
-// Crud GORM 版本的泛型CURD封装，R为对应的模型结构体
+// Crud GORM 版本的泛型CURD封装，R为对应的模型结构体， C为对应模型结构体的字段结构体
 type Crud[R any, C any] struct {
 	Dao IDao[C]
 }
