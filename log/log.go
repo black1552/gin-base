@@ -16,8 +16,9 @@ import (
 )
 
 var (
-	logPath string
-	sysLog  *log.Logger
+	logPath  string
+	sysLog   *log.Logger
+	filePath string
 )
 
 const (
@@ -59,9 +60,12 @@ func (w *logWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func init() {
+func Init() {
 	logPath = gfile.Join(gfile.Pwd(), "logs")
-	filePath := gfile.Join(logPath, fmt.Sprintf("log-%s.log", gtime.Date()))
+	filePath = gfile.Join(logPath, fmt.Sprintf("log-%s.log", gtime.Date()))
+	if gfile.Exists(filePath) {
+		return
+	}
 	fileLogger := &lumberjack.Logger{
 		Filename:   filePath,
 		MaxSize:    2,     // 单个文件最大 10MB
@@ -78,19 +82,23 @@ func init() {
 }
 
 func Info(v ...any) {
+	Init()
 	sysLog.SetPrefix(fmt.Sprintf("[%s] %s[INFO]%s ", time.Now().Format("2006-01-02 15:04:05"), Green, Reset))
 	sysLog.Println(fmt.Sprint(v...))
 }
 func Error(v ...any) {
+	Init()
 	sysLog.SetPrefix(fmt.Sprintf("[%s] %s[ERROR]%s ", time.Now().Format("2006-01-02 15:04:05"), Red, Reset))
 	msg := fmt.Sprint(v...)
 	sysLog.Println(msg, strings.TrimSpace(string(debug.Stack())))
 }
 func Warn(v ...any) {
+	Init()
 	sysLog.SetPrefix(fmt.Sprintf("[%s] %s[WARN]%s ", time.Now().Format("2006-01-02 15:04:05"), Yellow, Reset))
 	sysLog.Println(fmt.Sprint(v...))
 }
 func Debug(v ...any) {
+	Init()
 	sysLog.SetPrefix(fmt.Sprintf("[%s] %s[DEBUG]%s ", time.Now().Format("2006-01-02 15:04:05"), Blue, Reset))
 	sysLog.Println(fmt.Sprint(v...))
 }
