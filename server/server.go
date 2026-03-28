@@ -53,15 +53,15 @@ func Run(g *gin.Engine) {
 				log.Error("服务器启动失败:", err)
 			}
 			os.Exit(1) // 启动失败则退出程序
-		} else {
-			log.Info("服务器启动成功....")
-			if strings.Contains(s.Addr, "127.0.0.1") || strings.Contains(s.Addr, "0.0.0.0") || strings.Contains(s.Addr, "locahost") {
-				log.Info("请使用打开:", fmt.Sprintf("http://%s\n", s.Addr))
-			} else {
-				log.Info("请使用打开:", fmt.Sprintf("http://localhost%s\n", s.Addr))
-			}
 		}
 	}()
+	time.Sleep(time.Second)
+	log.Info("服务器启动成功....")
+	if strings.Contains(s.Addr, "127.0.0.1") || strings.Contains(s.Addr, "0.0.0.0") || strings.Contains(s.Addr, "locahost") {
+		log.Info("请使用打开:", fmt.Sprintf("http://%s\n", s.Addr))
+	} else {
+		log.Info("请使用打开:", fmt.Sprintf("http://localhost%s\n", s.Addr))
+	}
 
 	// 等待中断信号以优雅地关闭服务器
 	quit := make(chan os.Signal, 1)
