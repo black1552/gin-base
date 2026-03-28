@@ -8,7 +8,7 @@ import (
 
 // BaseModel 基础模型
 type BaseModel struct {
-	Id         uint   `gorm:"column:id;primaryKey;autoIncrement;common:主键ID" json:"id"`
+	Id         int    `gorm:"column:id;primaryKey;autoIncrement;common:主键ID" json:"id"`
 	CreateTime string `gorm:"autoCreateTime;column:create_time;type:datetime" json:"create_time"`
 	UpdateTime string `gorm:"autoUpdateTime;column:update_time;type:datetime" json:"update_time"`
 }
