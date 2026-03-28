@@ -1,25 +1,31 @@
 package model
 
 import (
-	"time"
-
+	"github.com/gogf/gf/v2/os/gtime"
 	"gorm.io/gorm"
 )
 
-// BaseModel 基础模型
-type BaseModel struct {
-	Id         int    `gorm:"column:id;primaryKey;autoIncrement;common:主键ID" json:"id"`
-	CreateTime string `gorm:"autoCreateTime;column:create_time;type:datetime" json:"create_time"`
-	UpdateTime string `gorm:"autoUpdateTime;column:update_time;type:datetime" json:"update_time"`
+type IdModel struct {
+	Id int `json:"id" gorm:"column:id;type:int(11);common:id"`
+}
+type TimeModel struct {
+	CreateTime string `json:"create_time" gorm:"column:create_time;type:varchar(255);common:创建时间"`
+	UpdateTime string `json:"update_time" gorm:"column:update_time;type:varchar(255);common:更新时间"`
 }
 
-func (b BaseModel) BeforeCreate(tx *gorm.DB) error {
-	b.CreateTime = time.Now().Format("2006-01-02 15:04:05")
-	b.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
+func (tm *TimeModel) BeforeCreate(scope *gorm.DB) error {
+	tm.CreateTime = gtime.Datetime()
+	tm.UpdateTime = gtime.Datetime()
 	return nil
 }
 
-func (b BaseModel) BeforeUpdate(tx *gorm.DB) error {
-	b.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
+func (tm *TimeModel) BeforeUpdate(scope *gorm.DB) error {
+	tm.UpdateTime = gtime.Datetime()
+	return nil
+}
+
+func (tm *TimeModel) AfterDelete(scope *gorm.DB) error {
+	tm.CreateTime = gtime.New(tm.CreateTime).String()
+	tm.UpdateTime = gtime.New(tm.UpdateTime).String()
 	return nil
 }
