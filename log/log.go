@@ -63,7 +63,7 @@ func (w *logWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-// cleanOldLogs 删除指定天数之前的日志文件
+// cleanOldLogs 删除指定天数之前的日志文件（包括主文件和备份文件）
 func cleanOldLogs(days int) {
 	if !gfile.Exists(logPath) {
 		return
@@ -81,13 +81,33 @@ func cleanOldLogs(days int) {
 		if gfile.IsDir(path) {
 			continue
 		}
-		// 匹配日志文件名格式：log-YYYY-MM-DD.log
-		if !strings.HasPrefix(file, "log-") || !strings.HasSuffix(file, ".log") {
+
+		var dateStr string
+		var matched bool
+
+		// 匹配主日志文件格式：log-YYYY-MM-DD.log
+		if strings.HasPrefix(file, "log-") && strings.HasSuffix(file, ".log") {
+			// 检查是否是主文件（没有备份时间戳）
+			// 主文件格式：log-2026-04-25.log
+			// 备份文件格式：log-2026-04-25-2026-04-25T10-30-45.123.log
+			parts := strings.Split(strings.TrimSuffix(file, ".log"), "-")
+			if len(parts) == 4 {
+				// 主文件：log-YYYY-MM-DD
+				dateStr = parts[1] + "-" + parts[2] + "-" + parts[3]
+				matched = true
+			} else if len(parts) > 4 {
+				// 备份文件：log-YYYY-MM-DD-YYYY-MM-DDTHH-MM-SS.mmm
+				// 提取主日期部分（第一个日期）
+				dateStr = parts[1] + "-" + parts[2] + "-" + parts[3]
+				matched = true
+			}
+		}
+
+		if !matched {
 			continue
 		}
 
-		// 提取日期部分
-		dateStr := strings.TrimSuffix(strings.TrimPrefix(file, "log-"), ".log")
+		// 解析日期
 		fileTime, err := time.Parse("2006-01-02", dateStr)
 		if err != nil {
 			continue // 日期格式不正确，跳过
