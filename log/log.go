@@ -16,9 +16,11 @@ import (
 )
 
 var (
-	logPath  string
-	sysLog   *log.Logger
-	filePath string
+	logPath     string
+	sysLog      *log.Logger
+	filePath    string
+	currentDate string // 当前日志文件对应的日期
+	fileLogger  *lumberjack.Logger
 )
 
 const (
@@ -60,13 +62,38 @@ func (w *logWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
+// checkAndRotateLogFile 检查是否需要切换日志文件（跨天时）
+func checkAndRotateLogFile() {
+	date := gtime.Date()
+	if currentDate != date {
+		// 日期变化，需要重新初始化
+		currentDate = date
+		filePath = gfile.Join(logPath, fmt.Sprintf("log-%s.log", currentDate))
+		fileLogger = &lumberjack.Logger{
+			Filename:   filePath,
+			MaxSize:    2,     // 单个文件最大 10MB
+			MaxBackups: 5,     // 最多保留 5 个备份
+			MaxAge:     30,    // 保留 30 天
+			Compress:   false, // 启用压缩
+		}
+		// 创建新的 writer
+		multiWriter := &logWriter{
+			console: os.Stdout,
+			file:    fileLogger,
+		}
+		sysLog = log.New(multiWriter, "", 0)
+	}
+}
+
 func Init() {
-	logPath = gfile.Join(gfile.Pwd(), "logs")
-	filePath = gfile.Join(logPath, fmt.Sprintf("log-%s.log", gtime.Date()))
-	if gfile.Exists(filePath) {
+	if sysLog != nil {
+		checkAndRotateLogFile() // 检查是否需要切换文件
 		return
 	}
-	fileLogger := &lumberjack.Logger{
+	logPath = gfile.Join(gfile.Pwd(), "logs")
+	currentDate = gtime.Date()
+	filePath = gfile.Join(logPath, fmt.Sprintf("log-%s.log", currentDate))
+	fileLogger = &lumberjack.Logger{
 		Filename:   filePath,
 		MaxSize:    2,     // 单个文件最大 10MB
 		MaxBackups: 5,     // 最多保留 5 个备份
