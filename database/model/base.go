@@ -2,31 +2,53 @@ package model
 
 import (
 	"database/sql/driver"
+	"encoding/json"
 	"fmt"
 	"time"
 )
 
-// LocalTime 自定义时间类型，支持 null 值
-type LocalTime struct {
+// DateTime 自定义时间类型
+type DateTime struct {
 	time.Time
 }
 
-func (t *LocalTime) MarshalJSON() ([]byte, error) {
-	if t == nil || t.IsZero() {
+// MarshalJSON 实现 JSON 序列化
+func (t DateTime) MarshalJSON() ([]byte, error) {
+	if t.IsZero() {
 		return []byte("null"), nil
 	}
-	formatted := fmt.Sprintf("\"%s\"", t.Format("2006-01-02 15:04:05"))
-	return []byte(formatted), nil
+	return json.Marshal(t.Format("2006-01-02 15:04:05"))
 }
 
-func (t *LocalTime) Value() (driver.Value, error) {
-	if t == nil || t.IsZero() {
+// UnmarshalJSON 实现 JSON 反序列化
+func (t *DateTime) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	if s == "" || s == "null" {
+		t.Time = time.Time{}
+		return nil
+	}
+
+	parsed, err := time.Parse("2006-01-02 15:04:05", s)
+	if err != nil {
+		return err
+	}
+	t.Time = parsed
+	return nil
+}
+
+// Value 实现 driver.Valuer
+func (t DateTime) Value() (driver.Value, error) {
+	if t.IsZero() {
 		return nil, nil
 	}
 	return t.Time, nil
 }
 
-func (t *LocalTime) Scan(v interface{}) error {
+// Scan 实现 sql.Scanner
+func (t *DateTime) Scan(v interface{}) error {
 	if v == nil {
 		t.Time = time.Time{}
 		return nil
@@ -36,14 +58,21 @@ func (t *LocalTime) Scan(v interface{}) error {
 	case time.Time:
 		t.Time = value
 		return nil
+	case string:
+		parsed, err := time.Parse("2006-01-02 15:04:05", value)
+		if err != nil {
+			return err
+		}
+		t.Time = parsed
+		return nil
 	default:
 		return fmt.Errorf("unsupported type: %T", v)
 	}
 }
 
-// BaseModel 基础模型，包含自定义的创建时间和更新时间
+// 基础模型
 type BaseModel struct {
-	Id         int        `json:"id" gorm:"column:id;primaryKey;autoIncrement;common:主键ID"` // 主键 ID
-	CreateTime *LocalTime `json:"create_time" gorm:"column:create_time;type:datetime;autoCreateTime;common:创建时间"`
-	UpdateTime *LocalTime `json:"update_time" gorm:"column:update_time;type:datetime;autoUpdateTime;common:更新时间"`
+	ID         uint     `gorm:"column:id;primaryKey;autoIncrement;common:主键ID" json:"id"`
+	CreateTime DateTime `gorm:"autoCreateTime;column:create_time;type:datetime" json:"create_time"`
+	UpdateTime DateTime `gorm:"autoUpdateTime;column:update_time;type:datetime" json:"update_time"`
 }
