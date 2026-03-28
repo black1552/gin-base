@@ -11,6 +11,7 @@ import (
 	"github.com/gogf/gf/v2/os/gfile"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 )
 
@@ -24,24 +25,36 @@ var (
 
 func init() {
 	if g.IsEmpty(dns) {
-		log.Error("gormDns未配置", "请检查配置文件")
+		log.Error("gormDns 未配置", "请检查配置文件")
 		return
 	}
 	switch config.GetConfigValue("database.type", "sqlite").String() {
 	case "mysql":
-		log.Info("使用mysql数据库")
+		log.Info("使用 mysql 数据库")
 		mysqlInit()
 	case "sqlite":
-		log.Info("使用sqlite数据库")
+		log.Info("使用 sqlite 数据库")
 		sqliteInit()
 	}
-	Db, err = gorm.Open(Type, &gorm.Config{
+
+	// 构建 GORM 配置
+	gormConfig := &gorm.Config{
 		SkipDefaultTransaction: true,
 		// 命名策略：保持与模型一致，避免字段/表名转换问题
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true, // 表名禁用复数形式（例如 User 对应 user 表，而非 users）
 		},
-	})
+	}
+
+	// 根据配置决定是否开启 GORM 查询日志
+	if config.GetConfigValue("database.debug", false).Bool() {
+		log.Info("已开启 GORM 查询日志")
+		gormConfig.Logger = logger.Default.LogMode(logger.Info)
+	} else {
+		gormConfig.Logger = logger.Default.LogMode(logger.Silent)
+	}
+
+	Db, err = gorm.Open(Type, gormConfig)
 	if err != nil {
 		log.Error("数据库连接失败: ", err)
 		return

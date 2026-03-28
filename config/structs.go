@@ -15,8 +15,9 @@ type ServerConfig struct {
 
 // DataBaseConfig 数据库配置
 type DataBaseConfig struct {
-	Dns  string `mapstructure:"dns"`
-	Type string `mapstructure:"type"`
+	Dns   string `mapstructure:"dns"`
+	Type  string `mapstructure:"type"`
+	Debug bool   `mapstructure:"debug"` // 是否开启 GORM 查询日志
 }
 
 // JwtConfig JWT配置
