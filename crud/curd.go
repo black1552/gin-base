@@ -16,12 +16,13 @@ type ctx = context.Context
 
 // IDao -------------------------- 核心接口定义 --------------------------
 // IDao GORM 版本的Dao接口，提供GORM DB实例和表相关信息
-type IDao interface {
+type IDao[T any] interface {
 	DB() *gorm.DB                                                                          // 返回GORM的DB实例
 	Table() string                                                                         // 返回表名
 	PrimaryKey() string                                                                    // 返回主键字段名（如：id）
 	Ctx(ctx context.Context) *gorm.DB                                                      // 绑定上下文的DB实例
 	Transaction(ctx context.Context, f func(ctx context.Context, tx *gorm.DB) error) error // 事务方法
+	Column() *T
 }
 
 // Paginate -------------------------- 分页结构体定义 --------------------------
@@ -48,8 +49,8 @@ var pageInfo = []string{
 
 // Crud -------------------------- 泛型CURD核心结构体 --------------------------
 // Crud GORM 版本的泛型CURD封装，R为对应的模型结构体
-type Crud[R any] struct {
-	Dao IDao
+type Crud[R any, C any] struct {
+	Dao IDao[C]
 }
 
 // -------------------------- 工具方法：字段名转换（保持原代码的命名风格转换） --------------------------
@@ -77,8 +78,12 @@ func caseConvert(key string, toSnake bool) string {
 	return result.String()
 }
 
+func (c Crud[R, C]) Columns() *C {
+	return c.Dao.Column()
+}
+
 // BuildWhere -------------------------- 原BuildWhere对应实现：构建查询条件map --------------------------
-func (c Crud[R]) BuildWhere(req any, changeWhere any, subWhere any, removeFields []string, isSnake ...bool) map[string]any {
+func (c Crud[R, C]) BuildWhere(req any, changeWhere any, subWhere any, removeFields []string, isSnake ...bool) map[string]any {
 	// 默认使用小写下划线方式
 	toSnake := true
 	if len(isSnake) > 0 && !isSnake[0] {
@@ -170,7 +175,7 @@ func (c Crud[R]) BuildWhere(req any, changeWhere any, subWhere any, removeFields
 }
 
 // BuildMap -------------------------- 原 BuildMap 对应实现：构建变更条件 map --------------------------
-func (c Crud[R]) BuildMap(op string, value any, field ...string) map[string]any {
+func (c Crud[R, C]) BuildMap(op string, value any, field ...string) map[string]any {
 	res := map[string]any{
 		"op":    op,
 		"field": "",
@@ -201,8 +206,8 @@ type WhereCondition struct {
 //	  ).
 //	  AND(map[string]any{"deleted": 0}).
 //	  Build()
-func (c Crud[R]) BuildWhereAndOr() *WhereBuilder[R] {
-	return &WhereBuilder[R]{
+func (c Crud[R, C]) BuildWhereAndOr() *WhereBuilder[R, C] {
+	return &WhereBuilder[R, C]{
 		conditions: make([]WhereCondition, 0),
 		crud:       c,
 	}
@@ -210,13 +215,13 @@ func (c Crud[R]) BuildWhereAndOr() *WhereBuilder[R] {
 
 // WhereBuilder -------------------------- WHERE 条件构建器 --------------------------
 // WhereBuilder 流式构建 WHERE 条件（R 为模型类型参数）
-type WhereBuilder[R any] struct {
+type WhereBuilder[R any, C any] struct {
 	conditions []WhereCondition
-	crud       Crud[R]
+	crud       Crud[R, C]
 }
 
 // AND 添加 AND 条件
-func (wb *WhereBuilder[R]) AND(conditions ...interface{}) *WhereBuilder[R] {
+func (wb *WhereBuilder[R, C]) AND(conditions ...interface{}) *WhereBuilder[R, C] {
 	if len(conditions) > 0 {
 		wb.conditions = append(wb.conditions, WhereCondition{
 			AND: conditions,
@@ -226,7 +231,7 @@ func (wb *WhereBuilder[R]) AND(conditions ...interface{}) *WhereBuilder[R] {
 }
 
 // OR 添加 OR 条件（OR 条件内部是或关系）
-func (wb *WhereBuilder[R]) OR(conditions ...interface{}) *WhereBuilder[R] {
+func (wb *WhereBuilder[R, C]) OR(conditions ...interface{}) *WhereBuilder[R, C] {
 	if len(conditions) > 0 {
 		wb.conditions = append(wb.conditions, WhereCondition{
 			OR: conditions,
@@ -237,7 +242,7 @@ func (wb *WhereBuilder[R]) OR(conditions ...interface{}) *WhereBuilder[R] {
 
 // Build 构建最终的查询条件
 // 返回格式：map[string]any 或者可以直接用于 GORM 的 Where 子句
-func (wb *WhereBuilder[R]) Build() interface{} {
+func (wb *WhereBuilder[R, C]) Build() interface{} {
 	if len(wb.conditions) == 0 {
 		return nil
 	}
@@ -279,7 +284,7 @@ func (wb *WhereBuilder[R]) Build() interface{} {
 }
 
 // buildORCondition 构建 OR 条件
-func (wb *WhereBuilder[R]) buildORCondition(orConds []interface{}) map[string]interface{} {
+func (wb *WhereBuilder[R, C]) buildORCondition(orConds []interface{}) map[string]interface{} {
 	if len(orConds) == 0 {
 		return nil
 	}
@@ -312,8 +317,8 @@ func (wb *WhereBuilder[R]) buildORCondition(orConds []interface{}) map[string]in
 //	db.Where("status = ?", 1).
 //	  Where(db.Where("age >= ?", 18).Or("age < ? AND vip = ?", 18, true)).
 //	  Find(&users)
-func (c Crud[R]) BuildWhereGORM(query interface{}, args ...interface{}) *GORMWhereBuilder[R] {
-	return &GORMWhereBuilder[R]{
+func (c Crud[R, C]) BuildWhereGORM(query interface{}, args ...interface{}) *GORMWhereBuilder[R, C] {
+	return &GORMWhereBuilder[R, C]{
 		DB:    c.Dao.DB(),
 		crud:  c,
 		query: query,
@@ -323,15 +328,15 @@ func (c Crud[R]) BuildWhereGORM(query interface{}, args ...interface{}) *GORMWhe
 
 // GORMWhereBuilder -------------------------- GORM 原生 WHERE 构建器 --------------------------
 // GORMWhereBuilder 使用 GORM 原生 API 构建复杂查询（R 为模型类型参数）
-type GORMWhereBuilder[R any] struct {
+type GORMWhereBuilder[R any, C any] struct {
 	*gorm.DB
-	crud  Crud[R]
+	crud  Crud[R, C]
 	query interface{}
 	args  []interface{}
 }
 
 // Where 添加 WHERE 条件（AND 关系）
-func (gwb *GORMWhereBuilder[R]) Where(query interface{}, args ...interface{}) *GORMWhereBuilder[R] {
+func (gwb *GORMWhereBuilder[R, C]) Where(query interface{}, args ...interface{}) *GORMWhereBuilder[R, C] {
 	// 如果当前已经有查询条件，先应用
 	if gwb.query != nil {
 		gwb = gwb.Where(gwb.query, gwb.args...)
@@ -342,7 +347,7 @@ func (gwb *GORMWhereBuilder[R]) Where(query interface{}, args ...interface{}) *G
 }
 
 // Or 添加 OR 条件
-func (gwb *GORMWhereBuilder[R]) Or(query interface{}, args ...interface{}) *GORMWhereBuilder[R] {
+func (gwb *GORMWhereBuilder[R, C]) Or(query interface{}, args ...interface{}) *GORMWhereBuilder[R, C] {
 	// 如果当前有未应用的查询条件，先应用
 	if gwb.query != nil {
 		gwb = gwb.Where(gwb.query, gwb.args...)
@@ -353,7 +358,7 @@ func (gwb *GORMWhereBuilder[R]) Or(query interface{}, args ...interface{}) *GORM
 }
 
 // Not 添加 NOT 条件
-func (gwb *GORMWhereBuilder[R]) Not(query interface{}, args ...interface{}) *GORMWhereBuilder[R] {
+func (gwb *GORMWhereBuilder[R, C]) Not(query interface{}, args ...interface{}) *GORMWhereBuilder[R, C] {
 	if gwb.query != nil {
 		gwb = gwb.Where(gwb.query, gwb.args...)
 		gwb.query = nil
@@ -364,7 +369,7 @@ func (gwb *GORMWhereBuilder[R]) Not(query interface{}, args ...interface{}) *GOR
 }
 
 // Find 执行查询并返回结果
-func (gwb *GORMWhereBuilder[R]) Find(items interface{}) error {
+func (gwb *GORMWhereBuilder[R, C]) Find(items interface{}) error {
 	// 应用剩余的查询条件
 	if gwb.query != nil {
 		gwb = gwb.Where(gwb.query, gwb.args...)
@@ -373,7 +378,7 @@ func (gwb *GORMWhereBuilder[R]) Find(items interface{}) error {
 }
 
 // First 查询第一条记录
-func (gwb *GORMWhereBuilder[R]) First(result interface{}) error {
+func (gwb *GORMWhereBuilder[R, C]) First(result interface{}) error {
 	if gwb.query != nil {
 		gwb = gwb.Where(gwb.query, gwb.args...)
 	}
@@ -381,7 +386,7 @@ func (gwb *GORMWhereBuilder[R]) First(result interface{}) error {
 }
 
 // Count 统计记录数
-func (gwb *GORMWhereBuilder[R]) Count(count *int64) error {
+func (gwb *GORMWhereBuilder[R, C]) Count(count *int64) error {
 	if gwb.query != nil {
 		gwb = gwb.Where(gwb.query, gwb.args...)
 	}
@@ -389,7 +394,7 @@ func (gwb *GORMWhereBuilder[R]) Count(count *int64) error {
 }
 
 // ClearField -------------------------- 原ClearField对应实现：清理请求参数并返回有效map --------------------------
-func (c Crud[R]) ClearField(req any, delField []string, subField ...map[string]any) map[string]any {
+func (c Crud[R, C]) ClearField(req any, delField []string, subField ...map[string]any) map[string]any {
 	reqMap := convToMap(req)
 	resultMap := make(map[string]any)
 
@@ -418,7 +423,7 @@ func (c Crud[R]) ClearField(req any, delField []string, subField ...map[string]a
 }
 
 // ClearFieldPage -------------------------- 原ClearFieldPage对应实现：清理参数+分页查询 --------------------------
-func (c Crud[R]) ClearFieldPage(ctx ctx, req any, delField []string, where any, page *Paginate, order any, with map[string]func(db *gorm.DB) *gorm.DB) (items []*R, total int64, err error) {
+func (c Crud[R, C]) ClearFieldPage(ctx ctx, req any, delField []string, where any, page *Paginate, order any, with map[string]func(db *gorm.DB) *gorm.DB) (items []*R, total int64, err error) {
 	// 1. 清理请求参数
 	filterMap := c.ClearField(req, delField)
 
@@ -459,7 +464,7 @@ func (c Crud[R]) ClearFieldPage(ctx ctx, req any, delField []string, where any, 
 }
 
 // ClearFieldList -------------------------- 原ClearFieldList对应实现：清理参数+列表查询（不分页） --------------------------
-func (c Crud[R]) ClearFieldList(ctx ctx, req any, delField []string, where any, order any, with map[string]func(db *gorm.DB) *gorm.DB) (items []*R, err error) {
+func (c Crud[R, C]) ClearFieldList(ctx ctx, req any, delField []string, where any, order any, with map[string]func(db *gorm.DB) *gorm.DB) (items []*R, err error) {
 	filterMap := c.ClearField(req, delField)
 	db := c.Dao.Ctx(ctx).Model(new(R))
 
@@ -480,7 +485,7 @@ func (c Crud[R]) ClearFieldList(ctx ctx, req any, delField []string, where any, 
 }
 
 // ClearFieldOne -------------------------- 原ClearFieldOne对应实现：清理参数+单条查询 --------------------------
-func (c Crud[R]) ClearFieldOne(ctx ctx, req any, delField []string, where any, order any, with map[string]func(db *gorm.DB) *gorm.DB) (item *R, err error) {
+func (c Crud[R, C]) ClearFieldOne(ctx ctx, req any, delField []string, where any, order any, with map[string]func(db *gorm.DB) *gorm.DB) (item *R, err error) {
 	item = new(R)
 	filterMap := c.ClearField(req, delField)
 	db := c.Dao.Ctx(ctx).Model(item)
@@ -506,7 +511,7 @@ func (c Crud[R]) ClearFieldOne(ctx ctx, req any, delField []string, where any, o
 }
 
 // Value -------------------------- 原Value对应实现：查询单个字段值 --------------------------
-func (c Crud[R]) Value(ctx ctx, where any, field any) (interface{}, error) {
+func (c Crud[R, C]) Value(ctx ctx, where any, field any) (interface{}, error) {
 	var result interface{}
 	db := c.Dao.Ctx(ctx).Model(new(R)).Where(where)
 
@@ -530,7 +535,7 @@ func (c Crud[R]) Value(ctx ctx, where any, field any) (interface{}, error) {
 }
 
 // DeletePri -------------------------- 原DeletePri对应实现：按主键删除 --------------------------
-func (c Crud[R]) DeletePri(ctx ctx, primaryKey any) error {
+func (c Crud[R, C]) DeletePri(ctx ctx, primaryKey any) error {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 	// 按主键字段构建查询
 	pk := c.Dao.PrimaryKey()
@@ -541,12 +546,12 @@ func (c Crud[R]) DeletePri(ctx ctx, primaryKey any) error {
 }
 
 // DeleteWhere -------------------------- 原DeleteWhere对应实现：按条件删除 --------------------------
-func (c Crud[R]) DeleteWhere(ctx ctx, where any) error {
+func (c Crud[R, C]) DeleteWhere(ctx ctx, where any) error {
 	return c.Dao.Ctx(ctx).Model(new(R)).Where(where).Delete(new(R)).Error
 }
 
 // Sum -------------------------- 原Sum对应实现：字段求和 --------------------------
-func (c Crud[R]) Sum(ctx ctx, where any, field string) float64 {
+func (c Crud[R, C]) Sum(ctx ctx, where any, field string) float64 {
 	var sum float64
 	if field == "" {
 		panic("求和字段不能为空")
@@ -560,7 +565,7 @@ func (c Crud[R]) Sum(ctx ctx, where any, field string) float64 {
 }
 
 // ArrayField -------------------------- 原ArrayField对应实现：查询指定字段数组 --------------------------
-func (c Crud[R]) ArrayField(ctx ctx, where any, field any) []interface{} {
+func (c Crud[R, C]) ArrayField(ctx ctx, where any, field any) []interface{} {
 	var result []interface{}
 	db := c.Dao.Ctx(ctx).Model(new(R)).Where(where)
 
@@ -584,7 +589,7 @@ func (c Crud[R]) ArrayField(ctx ctx, where any, field any) []interface{} {
 }
 
 // FindPri -------------------------- 原FindPri对应实现：按主键查询单条记录 --------------------------
-func (c Crud[R]) FindPri(ctx ctx, primaryKey any, with map[string]func(db *gorm.DB) *gorm.DB) (model *R) {
+func (c Crud[R, C]) FindPri(ctx ctx, primaryKey any, with map[string]func(db *gorm.DB) *gorm.DB) (model *R) {
 	model = new(R)
 	db := c.Dao.Ctx(ctx).Model(model)
 	pk := c.Dao.PrimaryKey()
@@ -607,7 +612,7 @@ func (c Crud[R]) FindPri(ctx ctx, primaryKey any, with map[string]func(db *gorm.
 }
 
 // -------------------------- 原First对应实现：按条件查询第一条记录 --------------------------
-func (c Crud[R]) First(ctx ctx, where any, order any, with map[string]func(db *gorm.DB) *gorm.DB) (model *R) {
+func (c Crud[R, C]) First(ctx ctx, where any, order any, with map[string]func(db *gorm.DB) *gorm.DB) (model *R) {
 	model = new(R)
 	db := c.Dao.Ctx(ctx).Model(model)
 
@@ -631,7 +636,7 @@ func (c Crud[R]) First(ctx ctx, where any, order any, with map[string]func(db *g
 }
 
 // -------------------------- 原Exists对应实现：判断记录是否存在 --------------------------
-func (c Crud[R]) Exists(ctx ctx, where any) (exists bool) {
+func (c Crud[R, C]) Exists(ctx ctx, where any) (exists bool) {
 	var count int64
 	err := c.Dao.Ctx(ctx).Model(new(R)).Where(where).Count(&count).Error
 	if err != nil {
@@ -641,7 +646,7 @@ func (c Crud[R]) Exists(ctx ctx, where any) (exists bool) {
 }
 
 // -------------------------- 原All对应实现：查询所有符合条件的记录 --------------------------
-func (c Crud[R]) All(ctx ctx, where any, order any, with map[string]func(db *gorm.DB) *gorm.DB) (items []*R) {
+func (c Crud[R, C]) All(ctx ctx, where any, order any, with map[string]func(db *gorm.DB) *gorm.DB) (items []*R) {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 
 	if with != nil {
@@ -664,7 +669,7 @@ func (c Crud[R]) All(ctx ctx, where any, order any, with map[string]func(db *gor
 }
 
 // -------------------------- 原Count对应实现：统计记录总数 --------------------------
-func (c Crud[R]) Count(ctx ctx, where any) (count int64) {
+func (c Crud[R, C]) Count(ctx ctx, where any) (count int64) {
 	err := c.Dao.Ctx(ctx).Model(new(R)).Where(where).Count(&count).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		panic(fmt.Sprintf("Count查询错误: %v", err))
@@ -673,7 +678,7 @@ func (c Crud[R]) Count(ctx ctx, where any) (count int64) {
 }
 
 // -------------------------- 原Save对应实现：新增/更新记录（对应GORM的Save） --------------------------
-func (c Crud[R]) Save(ctx ctx, data any) {
+func (c Crud[R, C]) Save(ctx ctx, data any) {
 	err := c.Dao.Ctx(ctx).Model(new(R)).Create(data).Error
 	if err != nil {
 		panic(fmt.Sprintf("Save保存错误: %v", err))
@@ -681,7 +686,7 @@ func (c Crud[R]) Save(ctx ctx, data any) {
 }
 
 // -------------------------- 原Update对应实现：按条件更新记录 --------------------------
-func (c Crud[R]) Update(ctx ctx, where any, data any) (count int64) {
+func (c Crud[R, C]) Update(ctx ctx, where any, data any) (count int64) {
 	result := c.Dao.Ctx(ctx).Model(new(R)).Where(where).Updates(data)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		panic(fmt.Sprintf("Update更新错误: %v", result.Error.Error()))
@@ -690,7 +695,7 @@ func (c Crud[R]) Update(ctx ctx, where any, data any) (count int64) {
 }
 
 // -------------------------- 原UpdatePri对应实现：按主键更新记录 --------------------------
-func (c Crud[R]) UpdatePri(ctx ctx, primaryKey any, data any) (count int64) {
+func (c Crud[R, C]) UpdatePri(ctx ctx, primaryKey any, data any) (count int64) {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 	pk := c.Dao.PrimaryKey()
 
@@ -706,7 +711,7 @@ func (c Crud[R]) UpdatePri(ctx ctx, primaryKey any, data any) (count int64) {
 }
 
 // -------------------------- 原Paginate对应实现：分页查询 --------------------------
-func (c Crud[R]) Paginate(ctx context.Context, where any, p Paginate, with map[string]func(db *gorm.DB) *gorm.DB, order any) (items []*R, total int64) {
+func (c Crud[R, C]) Paginate(ctx context.Context, where any, p Paginate, with map[string]func(db *gorm.DB) *gorm.DB, order any) (items []*R, total int64) {
 	db := c.Dao.Ctx(ctx).Model(new(R))
 
 	// 1. 构建查询条件
