@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"runtime/debug"
 	"strings"
@@ -62,6 +63,48 @@ func (w *logWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
+// cleanOldLogs 删除指定天数之前的日志文件
+func cleanOldLogs(days int) {
+	if !gfile.Exists(logPath) {
+		return
+	}
+
+	// 获取所有日志文件
+	files, err := gfile.DirNames(logPath)
+	if err != nil {
+		return
+	}
+
+	now := time.Now()
+	for _, file := range files {
+		path := filepath.Join(logPath, file)
+		if gfile.IsDir(path) {
+			continue
+		}
+		// 匹配日志文件名格式：log-YYYY-MM-DD.log
+		if !strings.HasPrefix(file, "log-") || !strings.HasSuffix(file, ".log") {
+			continue
+		}
+
+		// 提取日期部分
+		dateStr := strings.TrimSuffix(strings.TrimPrefix(file, "log-"), ".log")
+		fileTime, err := time.Parse("2006-01-02", dateStr)
+		if err != nil {
+			continue // 日期格式不正确，跳过
+		}
+
+		// 计算文件年龄
+		tage := now.Sub(fileTime)
+		if tage.Hours() > float64(days*24) {
+			// 超过指定天数，删除文件
+			err = os.Remove(path)
+			if err == nil {
+				Info(fmt.Sprintf("已删除过期日志文件：%s", file))
+			}
+		}
+	}
+}
+
 // checkAndRotateLogFile 检查是否需要切换日志文件（跨天时）
 func checkAndRotateLogFile() {
 	date := gtime.Date()
@@ -82,6 +125,9 @@ func checkAndRotateLogFile() {
 			file:    fileLogger,
 		}
 		sysLog = log.New(multiWriter, "", 0)
+
+		// 清理 30 天前的旧日志
+		cleanOldLogs(30)
 	}
 }
 
@@ -106,6 +152,9 @@ func Init() {
 		file:    fileLogger,
 	}
 	sysLog = log.New(multiWriter, "", 0)
+
+	// 启动时清理 30 天前的旧日志
+	cleanOldLogs(30)
 }
 
 func Info(v ...any) {
