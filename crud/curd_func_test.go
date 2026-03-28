@@ -98,7 +98,7 @@ func TestBuildWhere(t *testing.T) {
 // TestBuildMap 测试 BuildMap 方法
 func TestBuildMap(t *testing.T) {
 	// 创建一个空的 Crud 实例用于测试（不需要实际的 Dao）
-	var crud Crud[interface{}]
+	var crud Crud[interface{}, interface{}]
 
 	t.Run("BuildMapWithoutField", func(t *testing.T) {
 		result := crud.BuildMap(">", 18)
@@ -131,7 +131,7 @@ func TestBuildMap(t *testing.T) {
 
 // TestClearField 测试 ClearField 方法
 func TestClearField(t *testing.T) {
-	var crud Crud[interface{}]
+	var crud Crud[interface{}, interface{}]
 
 	t.Run("ClearFieldBasic", func(t *testing.T) {
 		req := struct {
@@ -210,7 +210,7 @@ func TestClearField(t *testing.T) {
 
 // TestBuildWhereAndOr 测试 BuildWhereAndOr 方法
 func TestBuildWhereAndOr(t *testing.T) {
-	var crud Crud[interface{}]
+	var crud Crud[interface{}, interface{}]
 
 	t.Run("SimpleAND", func(t *testing.T) {
 		where := crud.BuildWhereAndOr().
