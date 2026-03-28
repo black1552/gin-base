@@ -26,3 +26,8 @@ func (b *BaseModel) BeforeUpdate(tx *gorm.DB) error {
 	b.UpdateTime = time.Now()
 	return nil
 }
+
+func (b *BaseModel) AfterFind(tx *gorm.DB) error {
+	b.UpdateTime = time.Now()
+	return nil
+}

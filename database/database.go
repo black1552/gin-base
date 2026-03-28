@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"git.magicany.cc/black1552/gin-base/config"
 	"git.magicany.cc/black1552/gin-base/log"
@@ -40,6 +41,9 @@ func init() {
 	// 构建 GORM 配置
 	gormConfig := &gorm.Config{
 		SkipDefaultTransaction: true,
+		NowFunc: func() time.Time {
+			return time.Now().Local()
+		},
 		// 命名策略：保持与模型一致，避免字段/表名转换问题
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true, // 表名禁用复数形式（例如 User 对应 user 表，而非 users）
