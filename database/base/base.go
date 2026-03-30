@@ -14,18 +14,18 @@ type TimeModel struct {
 }
 
 func (tm *TimeModel) BeforeCreate(scope *gorm.DB) error {
-	tm.CreateTime = gtime.Datetime()
-	tm.UpdateTime = gtime.Datetime()
+	scope.Set("create_time", gtime.Datetime())
+	scope.Set("update_time", gtime.Datetime())
 	return nil
 }
 
 func (tm *TimeModel) BeforeUpdate(scope *gorm.DB) error {
-	tm.UpdateTime = gtime.Datetime()
+	scope.Set("update_time", gtime.Datetime())
 	return nil
 }
 
-func (tm *TimeModel) AfterDelete(scope *gorm.DB) error {
-	tm.CreateTime = gtime.New(tm.CreateTime).String()
-	tm.UpdateTime = gtime.New(tm.UpdateTime).String()
-	return nil
-}
+//func (tm *TimeModel) AfterFind(scope *gorm.DB) error {
+//	tm.CreateTime = gtime.New(tm.CreateTime).String()
+//	tm.UpdateTime = gtime.New(tm.UpdateTime).String()
+//	return nil
+//}
