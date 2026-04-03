@@ -8,6 +8,9 @@ import (
 	"git.magicany.cc/black1552/gin-base/db/driver"
 )
 
+// defaultDatabase 全局默认数据库连接实例
+var defaultDatabase *Database
+
 // NewDatabase 创建数据库连接 - 初始化数据库连接和相关组件
 func NewDatabase(config *Config) (*Database, error) {
 	db := &Database{
@@ -58,6 +61,9 @@ func NewDatabase(config *Config) (*Database, error) {
 	if config.Debug {
 		fmt.Println("[Magic-ORM] 数据库连接成功")
 	}
+
+	// 设置为全局默认实例
+	defaultDatabase = db
 
 	return db, nil
 }
@@ -125,4 +131,14 @@ func loadAndConnect(configPath string, debug bool) (*Database, error) {
 
 	// 简单方案：返回错误，提示使用 config 包
 	return nil, fmt.Errorf("请使用 config.AutoConnect() 方法")
+}
+
+// GetDefaultDatabase 获取全局默认数据库实例
+func GetDefaultDatabase() *Database {
+	return defaultDatabase
+}
+
+// SetDefaultDatabase 设置全局默认数据库实例
+func SetDefaultDatabase(db *Database) {
+	defaultDatabase = db
 }

@@ -13,22 +13,26 @@ type DAO struct {
 }
 
 // NewDAO 创建 DAO 基类实例
-func NewDAO(db *Database) *DAO {
-	return &DAO{db: db}
+// 自动使用全局默认 Database 实例
+func NewDAO() *DAO {
+	return &DAO{
+		db: GetDefaultDatabase(),
+	}
 }
 
 // NewDAOWithModel 创建带模型类型的 DAO 基类实例
 // 参数：
-//   - db: 数据库连接实例
 //   - model: 模型实例（指针类型），用于获取表结构信息
-func NewDAOWithModel(db *Database, model interface{}) *DAO {
+// 自动使用全局默认 Database 实例
+func NewDAOWithModel(model interface{}) *DAO {
 	return &DAO{
-		db:        db,
+		db:        GetDefaultDatabase(),
 		modelType: model,
 	}
 }
 
 // Create 创建记录（通用方法）
+// 自动使用 DAO 中已关联的 Database 实例
 func (dao *DAO) Create(ctx context.Context, model interface{}) error {
 	// 使用事务来插入数据
 	tx, err := dao.db.Begin()
@@ -46,11 +50,13 @@ func (dao *DAO) Create(ctx context.Context, model interface{}) error {
 }
 
 // GetByID 根据 ID 查询单条记录（通用方法）
+// 自动使用 DAO 中已关联的 Database 实例
 func (dao *DAO) GetByID(ctx context.Context, model interface{}, id int64) error {
 	return dao.db.Model(model).Where("id = ?", id).First(model)
 }
 
 // Update 更新记录（通用方法）
+// 自动使用 DAO 中已关联的 Database 实例
 func (dao *DAO) Update(ctx context.Context, model interface{}, data map[string]interface{}) error {
 	pkValue := getFieldValue(model, "ID")
 
@@ -62,6 +68,7 @@ func (dao *DAO) Update(ctx context.Context, model interface{}, data map[string]i
 }
 
 // Delete 删除记录（通用方法）
+// 自动使用 DAO 中已关联的 Database 实例
 func (dao *DAO) Delete(ctx context.Context, model interface{}) error {
 	pkValue := getFieldValue(model, "ID")
 
@@ -73,16 +80,19 @@ func (dao *DAO) Delete(ctx context.Context, model interface{}) error {
 }
 
 // FindAll 查询所有记录（通用方法）
+// 自动使用 DAO 中已关联的 Database 实例
 func (dao *DAO) FindAll(ctx context.Context, model interface{}) error {
 	return dao.db.Model(model).Find(model)
 }
 
 // FindByPage 分页查询（通用方法）
+// 自动使用 DAO 中已关联的 Database 实例
 func (dao *DAO) FindByPage(ctx context.Context, model interface{}, page, pageSize int) error {
 	return dao.db.Model(model).Limit(pageSize).Offset((page - 1) * pageSize).Find(model)
 }
 
 // Count 统计记录数（通用方法）
+// 自动使用 DAO 中已关联的 Database 实例
 func (dao *DAO) Count(ctx context.Context, model interface{}, where ...string) (int64, error) {
 	var count int64
 
@@ -100,6 +110,7 @@ func (dao *DAO) Count(ctx context.Context, model interface{}, where ...string) (
 }
 
 // Exists 检查记录是否存在（通用方法）
+// 自动使用 DAO 中已关联的 Database 实例
 func (dao *DAO) Exists(ctx context.Context, model interface{}) (bool, error) {
 	count, err := dao.Count(ctx, model)
 	if err != nil {
@@ -109,6 +120,7 @@ func (dao *DAO) Exists(ctx context.Context, model interface{}) (bool, error) {
 }
 
 // First 查询第一条记录（通用方法）
+// 自动使用 DAO 中已关联的 Database 实例
 func (dao *DAO) First(ctx context.Context, model interface{}) error {
 	return dao.db.Model(model).First(model)
 }
@@ -123,14 +135,14 @@ func (dao *DAO) First(ctx context.Context, model interface{}) error {
 //	    *core.DAO
 //	}
 //
-//	func NewUserDAO(db *core.Database) *UserDAO {
+//	func NewUserDAO() *UserDAO {
 //	    return &UserDAO{
-//	        DAO: core.NewDAOWithModel(db, &model.User{}),
+//	        DAO: core.NewDAOWithModel(&model.User{}),
 //	    }
 //	}
 //
 //	// 使用
-//	dao := NewUserDAO(db)
+//	dao := NewUserDAO()
 //	cols := dao.Columns() // 返回 *struct{ID string; Username string; ...}
 func (dao *DAO) Columns() interface{} {
 	// 检查是否有模型类型信息

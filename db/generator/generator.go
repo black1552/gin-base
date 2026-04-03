@@ -139,19 +139,15 @@ import (
 	"git.magicany.cc/black1552/gin-base/db/model"
 )
 
-// {{.ModelName}}DAO {{.TableName}} 数据访问对象
-// 嵌入 core.DAO，自动获得所有 CRUD 方法
-type {{.ModelName}}DAO struct {
-	*core.DAO
+var {{.ModelName}}Dao = &s{{.ModelName}}DAO{
+	DAO: core.NewDAOWithModel(&model.{{.ModelName}}),
 }
 
-// New{{.ModelName}}DAO 创建 {{.ModelName}}DAO 实例
-func New{{.ModelName}}DAO(db *core.Database) *{{.ModelName}}DAO {
-	return &{{.ModelName}}DAO{
-		DAO: core.NewDAOWithModel(db, &model.{{.ModelName}}{}),
-	}
-}
-`
+// {{.ModelName}}DAO {{.TableName}} 数据访问对象
+// 嵌入 core.DAO，自动获得所有 CRUD 方法
+type s{{.ModelName}}DAO struct {
+	*core.DAO
+}`
 
 	data := struct {
 		ModelName string
