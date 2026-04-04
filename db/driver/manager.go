@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"fmt"
 	"sync"
 )
 
@@ -44,23 +45,39 @@ func GetDefaultManager() *DriverManager {
 
 // registerBuiltinDrivers 注册所有内置驱动 - 自动注册框架自带的所有数据库驱动
 func (dm *DriverManager) registerBuiltinDrivers() {
-	// TODO: 注册 MySQL 驱动
-	// dm.Register("mysql", &MySQLDriver{})
+	// 注意：在这个纯自研 ORM 设计中，我们不自动注册任何具体的数据库驱动
+	// 驱动由使用者在应用程序中注册，例如：
+	//
+	// import _ "github.com/mattn/go-sqlite3"  // 注册 SQLite 驱动
+	// import _ "github.com/go-sql-driver/mysql"  // 注册 MySQL 驱动
+	//
+	// 然后使用 dm.Register("sqlite3", &driver.OfficialDriver{"sqlite3"})
 
-	// TODO: 注册 SQLite 驱动
-	// dm.Register("sqlite", &SQLiteDriver{})
+	// 我们只提供一个机制，让使用者可以注册他们选择的驱动
+	// 这样可以完全避免对特定第三方驱动的硬依赖
+}
 
-	// TODO: 注册 PostgreSQL 驱动
-	// dm.Register("postgres", &PostgresDriver{})
+// isDriverAvailable 检查驱动是否可用（根据导入的包）
+func (dm *DriverManager) isDriverAvailable(driverName string) bool {
+	// 检查指定名称的驱动是否已注册
+	_, err := dm.GetDriver(driverName)
+	return err == nil
+}
 
-	// TODO: 注册 SQL Server 驱动
-	// dm.Register("sqlserver", &SQLServerDriver{})
-
-	// TODO: 注册 Oracle 驱动
-	// dm.Register("oracle", &OracleDriver{})
-
-	// TODO: 注册 ClickHouse 驱动
-	// dm.Register("clickhouse", &ClickHouseDriver{})
+// RegisterDriverByConfig 根据配置自动注册驱动
+// 在纯自研设计中，此方法提示用户手动注册驱动
+func (dm *DriverManager) RegisterDriverByConfig(configType string) error {
+	switch configType {
+	case "mysql", "postgres", "sqlite", "sqlite3", "sqlserver", "oracle", "clickhouse":
+		// 检查驱动是否已经注册
+		if !dm.isDriverAvailable(configType) {
+			// 如果驱动未注册，返回指导信息
+			return fmt.Errorf("驱动 '%s' 未注册。请在应用中导入并注册相应的驱动，例如: import _ \"github.com/mattn/go-sqlite3\"", configType)
+		}
+	default:
+		return fmt.Errorf("不支持的数据库类型：%s", configType)
+	}
+	return nil
 }
 
 // Register 注册驱动 - 将新的数据库驱动注册到管理器中

@@ -23,6 +23,7 @@ func NewDAO() *DAO {
 // NewDAOWithModel 创建带模型类型的 DAO 基类实例
 // 参数：
 //   - model: 模型实例（指针类型），用于获取表结构信息
+//
 // 自动使用全局默认 Database 实例
 func NewDAOWithModel(model interface{}) *DAO {
 	return &DAO{
@@ -192,8 +193,122 @@ func (dao *DAO) Columns() interface{} {
 }
 
 // getFieldValue 获取结构体字段值（辅助函数）
+// 用于获取主键或其他字段的值，支持多种数据类型
+// 参数：
+//   - model: 模型实例（可以是指针或值）
+//   - fieldName: 字段名（如 "ID", "UserId" 等）
+//
+// 返回：
+//   - int64: 字段值（如果是数字类型）或 0（无法获取时）
 func getFieldValue(model interface{}, fieldName string) int64 {
-	// TODO: 使用反射获取字段值
-	// 这里是简化实现，实际需要根据情况完善
-	return 0
+	// 检查空值
+	if model == nil {
+		return 0
+	}
+
+	// 获取反射对象
+	val := reflect.ValueOf(model)
+
+	// 如果是指针，解引用
+	if val.Kind() == reflect.Ptr {
+		if val.IsNil() {
+			return 0
+		}
+		val = val.Elem()
+	}
+
+	// 确保是结构体
+	if val.Kind() != reflect.Struct {
+		return 0
+	}
+
+	// 查找字段
+	field := val.FieldByName(fieldName)
+	if !field.IsValid() {
+		// 尝试查找常见的主键字段名变体
+		alternativeNames := []string{"Id", "id", "ID"}
+		for _, name := range alternativeNames {
+			if name != fieldName {
+				field = val.FieldByName(name)
+				if field.IsValid() {
+					fieldName = name
+					break
+				}
+			}
+		}
+
+		if !field.IsValid() {
+			return 0
+		}
+	}
+
+	// 检查字段是否可以访问
+	if !field.CanInterface() {
+		return 0
+	}
+
+	// 获取字段值并转换为 int64
+	fieldValue := field.Interface()
+
+	// 根据字段类型进行转换
+	switch v := fieldValue.(type) {
+	case int:
+		return int64(v)
+	case int8:
+		return int64(v)
+	case int16:
+		return int64(v)
+	case int32:
+		return int64(v)
+	case int64:
+		return v
+	case uint:
+		return int64(v)
+	case uint8:
+		return int64(v)
+	case uint16:
+		return int64(v)
+	case uint32:
+		return int64(v)
+	case uint64:
+		// 注意：uint64 转 int64 可能溢出，但这里假设 ID 不会超过 int64 范围
+		return int64(v)
+	case float32:
+		return int64(v)
+	case float64:
+		return int64(v)
+	case string:
+		// 尝试将字符串解析为数字
+		// 注意：这里不导入 strconv，简单处理返回 0
+		return 0
+	default:
+		// 其他类型（如 sql.NullInt64 等），尝试使用反射
+		return convertToInteger(field)
+	}
+}
+
+// convertToInteger 使用反射将字段值转换为 int64
+func convertToInteger(field reflect.Value) int64 {
+	// 获取实际的值（如果是指针则解引用）
+	if field.Kind() == reflect.Ptr {
+		if field.IsNil() {
+			return 0
+		}
+		field = field.Elem()
+	}
+
+	// 根据 Kind 进行转换
+	switch field.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return field.Int()
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return int64(field.Uint())
+	case reflect.Float32, reflect.Float64:
+		return int64(field.Float())
+	case reflect.String:
+		// 字符串类型，尝试解析（简单实现，不处理错误）
+		return 0
+	default:
+		return 0
+	}
 }

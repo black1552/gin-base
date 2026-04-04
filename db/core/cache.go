@@ -3,6 +3,7 @@ package core
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -113,18 +114,35 @@ func GenerateCacheKey(sql string, args ...interface{}) string {
 	return hex.EncodeToString(hash[:])
 }
 
+// deepCopy 深拷贝数据（使用 JSON 序列化/反序列化）
+func deepCopy(src, dst interface{}) error {
+	// 序列化为 JSON
+	data, err := json.Marshal(src)
+	if err != nil {
+		return fmt.Errorf("序列化失败：%w", err)
+	}
+
+	// 反序列化到目标
+	if err := json.Unmarshal(data, dst); err != nil {
+		return fmt.Errorf("反序列化失败：%w", err)
+	}
+
+	return nil
+}
+
 // WithCache 带缓存的查询装饰器
 func (q *QueryBuilder) WithCache(cache *QueryCache) IQuery {
-	// 生成缓存键
-	cacheKey := GenerateCacheKey(q.Build())
-
-	// 尝试从缓存获取
-	if data, exists := cache.Get(cacheKey); exists {
-		// TODO: 将缓存数据映射到结果对象
-		_ = data
+	if cache == nil {
 		return q
 	}
 
-	// 缓存未命中，执行实际查询并缓存结果
+	// 设置缓存实例
+	q.cache = cache
+	q.useCache = true
+
+	// 生成缓存键（使用 SQL 和参数）
+	sqlStr, args := q.BuildSelect()
+	q.cacheKey = GenerateCacheKey(sqlStr, args...)
+
 	return q
 }

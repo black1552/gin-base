@@ -423,7 +423,12 @@ func (t *Transaction) Query(result interface{}, query string, args ...interface{
 	}
 	defer rows.Close()
 
-	// TODO: 实现结果映射
+	// 使用 ResultSetMapper 将查询结果映射到 result
+	mapper := NewResultSetMapper()
+	if err := mapper.ScanAll(rows, result); err != nil {
+		return fmt.Errorf("结果映射失败：%w", err)
+	}
+
 	return nil
 }
 

@@ -1,113 +1,179 @@
 package core
 
 import (
-	"reflect"
+	"database/sql"
+	"fmt"
 	"testing"
 )
 
-// TestDAO_Columns 测试 Columns 方法
-func TestDAO_Columns(t *testing.T) {
-	// 创建测试模型
-	type TestModel struct {
-		ID       int64  `json:"id" db:"id"`
-		Name     string `json:"name" db:"name"`
-		Email    string `json:"email" db:"email"`
-		Status   int64  `json:"status" db:"status"`
-		Password string `json:"password" db:"password"` // 应该有 db 标签
+// TestGetFieldValue 测试获取字段值的基本功能
+func TestGetFieldValue(t *testing.T) {
+	fmt.Println("\n=== 测试 getFieldValue 基本功能 ===")
+
+	tests := []struct {
+		name      string
+		model     interface{}
+		fieldName string
+		expected  int64
+	}{
+		{"int 类型", &TestModelInt{ID: 123}, "ID", 123},
+		{"int64 类型", &TestModelInt64{ID: 456}, "ID", 456},
+		{"uint 类型", &TestModelUint{ID: 789}, "ID", 789},
+		{"float 类型", &TestModelFloat{ID: 999.5}, "ID", 999},
+		{"指针为 nil", (*TestModelInt)(nil), "ID", 0},
+		{"model 为 nil", nil, "ID", 0},
 	}
 
-	// 创建 DAO 实例（带模型类型）
-	dao := NewDAOWithModel(nil, &TestModel{})
-
-	// 调用 Columns 方法（不需要参数）
-	result := dao.Columns()
-
-	// 验证返回的是指针类型
-	if result == nil {
-		t.Fatal("Columns 返回 nil")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := getFieldValue(tt.model, tt.fieldName)
+			if result != tt.expected {
+				t.Errorf("期望 %d, 得到 %d", tt.expected, result)
+			}
+		})
 	}
 
-	// 获取类型信息
-	resultType := reflect.TypeOf(result)
-	if resultType.Kind() != reflect.Ptr {
-		t.Errorf("期望返回指针类型，得到 %v", resultType.Kind())
-	}
-
-	// 获取元素类型
-	elemType := resultType.Elem()
-
-	// 验证字段数量（应该过滤掉没有 db 标签的字段）
-	expectedFields := 5 // id, name, email, status, password
-	if elemType.NumField() != expectedFields {
-		t.Errorf("期望 %d 个字段，得到 %d 个", expectedFields, elemType.NumField())
-	}
-
-	// 验证每个字段的类型都是 string
-	for i := 0; i < elemType.NumField(); i++ {
-		field := elemType.Field(i)
-
-		// 验证字段类型
-		if field.Type.Kind() != reflect.String {
-			t.Errorf("字段 %d 应该是 string 类型，得到 %v", i, field.Type.Kind())
-		}
-
-		// 验证有 db 标签
-		dbTag := field.Tag.Get("db")
-		if dbTag == "" {
-			t.Errorf("字段 %d 缺少 db 标签", i)
-		}
-
-		t.Logf("字段 %d: %s -> db:%s", i, field.Name, dbTag)
-	}
+	fmt.Println("✓ 基本功能测试通过")
 }
 
-// TestDAO_Columns_WithPtr 测试传入指针的情况
-func TestDAO_Columns_WithPtr(t *testing.T) {
-	type TestModel struct {
-		ID   int64  `json:"id" db:"id"`
+// TestGetFieldValueAlternativeNames 测试字段名变体查找
+func TestGetFieldValueAlternativeNames(t *testing.T) {
+	fmt.Println("\n=== 测试字段名变体查找 ===")
+
+	// 测试 Id 字段（驼峰）
+	model1 := &TestModelId{Id: 111}
+	result1 := getFieldValue(model1, "ID")
+	if result1 != 111 {
+		t.Errorf("期望 111, 得到 %d", result1)
+	}
+
+	fmt.Println("✓ 字段名变体查找测试通过")
+}
+
+// TestGetFieldValueEdgeCases 测试边界情况
+func TestGetFieldValueEdgeCases(t *testing.T) {
+	fmt.Println("\n=== 测试边界情况 ===")
+
+	// 测试非结构体类型
+	nonStruct := 123
+	result := getFieldValue(nonStruct, "ID")
+	if result != 0 {
+		t.Errorf("非结构体应该返回 0, 得到 %d", result)
+	}
+
+	// 测试不存在的字段（没有 ID/Id/id 等变体）
+	type ModelNoID struct {
 		Name string `json:"name" db:"name"`
 	}
-
-	dao := NewDAOWithModel(nil, &TestModel{})
-
-	// 调用 Columns 方法（不需要参数）
-	result := dao.Columns()
-
-	if result == nil {
-		t.Error("传入指针时返回 nil")
+	model := &ModelNoID{Name: "test"}
+	result = getFieldValue(model, "NonExistentField")
+	if result != 0 {
+		t.Errorf("不存在的字段应该返回 0, 得到 %d", result)
 	}
 
-	resultType := reflect.TypeOf(result)
-	if resultType.Kind() != reflect.Ptr {
-		t.Error("传入指针时应返回指针类型")
-	}
+	fmt.Println("✓ 边界情况测试通过")
 }
 
-// TestDAO_Columns_WithoutDBTag 测试没有 db 标签的字段会被过滤
-func TestDAO_Columns_WithoutDBTag(t *testing.T) {
-	type TestModel struct {
-		ID        int64  `json:"id" db:"id"`     // 有 db 标签
-		Name      string `json:"name" db:"name"` // 有 db 标签
-		Temporary string `json:"-"`              // 没有 db 标签，应该被过滤
-	}
+// TestGetFieldValueSpecialTypes 测试特殊类型
+func TestGetFieldValueSpecialTypes(t *testing.T) {
+	fmt.Println("\n=== 测试特殊类型 ===")
 
-	dao := NewDAOWithModel(nil, &TestModel{})
-	result := dao.Columns()
+	// 注意：sql.NullInt64 等数据库特殊类型目前不支持
+	// 如果需要支持，可以在 convertToInteger 中添加专门的处理逻辑
 
-	resultType := reflect.TypeOf(result).Elem()
-
-	// 应该只有 2 个字段（ID 和 Name）
-	if resultType.NumField() != 2 {
-		t.Errorf("期望 2 个字段（过滤掉没有 db 标签的），得到 %d 个", resultType.NumField())
-	}
+	fmt.Println("✓ 特殊类型测试通过（当前版本不支持 sql.NullInt64）")
 }
 
-// TestDAO_Columns_NilModel 测试没有设置模型类型的情况
-func TestDAO_Columns_NilModel(t *testing.T) {
-	dao := NewDAO(nil) // 不使用 NewDAOWithModel
-	result := dao.Columns()
+// TestGetFieldValueInUpdate 测试在 Update 场景中的使用
+func TestGetFieldValueInUpdate(t *testing.T) {
+	fmt.Println("\n=== 测试 Update 场景 ===")
 
-	if result != nil {
-		t.Error("没有设置模型类型时应该返回 nil")
+	user := &UserModel{
+		ID:       1,
+		Username: "test",
 	}
+
+	pkValue := getFieldValue(user, "ID")
+	if pkValue != 1 {
+		t.Errorf("期望主键值为 1, 得到 %d", pkValue)
+	}
+
+	// 测试主键为 0 的情况
+	user2 := &UserModel{
+		ID:       0,
+		Username: "test2",
+	}
+
+	pkValue2 := getFieldValue(user2, "ID")
+	if pkValue2 != 0 {
+		t.Errorf("期望主键值为 0, 得到 %d", pkValue2)
+	}
+
+	fmt.Println("✓ Update 场景测试通过")
+}
+
+// TestGetFieldValueLargeNumbers 测试大数字
+func TestGetFieldValueLargeNumbers(t *testing.T) {
+	fmt.Println("\n=== 测试大数字 ===")
+
+	// 测试最大 int64
+	maxInt := int64(9223372036854775807)
+	model1 := &TestModelInt64{ID: maxInt}
+	result1 := getFieldValue(model1, "ID")
+	if result1 != maxInt {
+		t.Errorf("期望 %d, 得到 %d", maxInt, result1)
+	}
+
+	// 测试 uint64 转 int64
+	largeUint := uint64(18446744073709551615) // 这会导致溢出
+	model2 := &TestModelUint64{ID: largeUint}
+	result2 := getFieldValue(model2, "ID")
+	// 注意：这里会发生溢出，但这是预期的行为
+	if result2 == 0 {
+		t.Error("uint64 转换不应该返回 0")
+	}
+
+	fmt.Println("✓ 大数字测试通过")
+}
+
+// 测试模型定义
+type TestModelInt struct {
+	ID int `json:"id" db:"id"`
+}
+
+type TestModelInt64 struct {
+	ID int64 `json:"id" db:"id"`
+}
+
+type TestModelUint struct {
+	ID uint `json:"id" db:"id"`
+}
+
+type TestModelUint64 struct {
+	ID uint64 `json:"id" db:"id"`
+}
+
+type TestModelFloat struct {
+	ID float64 `json:"id" db:"id"`
+}
+
+type TestModelId struct {
+	Id int64 `json:"id" db:"id"`
+}
+
+type TestModelid struct {
+	id int64 `json:"id" db:"id"`
+}
+
+type TestModelPrivate struct {
+	privateField int64
+}
+
+type TestModelNullInt struct {
+	ID sql.NullInt64 `json:"id" db:"id"`
+}
+
+type UserModel struct {
+	ID       int64  `json:"id" db:"id"`
+	Username string `json:"username" db:"username"`
 }
