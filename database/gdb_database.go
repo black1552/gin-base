@@ -20,7 +20,7 @@ const (
 	ConfigNodeNameDatabase         = "database"
 )
 
-func Database(name ...string) gdb.DB {
+func Database(name ...string) DB {
 	var (
 		ctx   = context.Background()
 		group = gdb.DefaultGroupName
@@ -137,7 +137,7 @@ func Database(name ...string) gdb.DB {
 		return nil
 	})
 	if db != nil {
-		return db.(gdb.DB)
+		return db.(DB)
 	}
 	return nil
 }

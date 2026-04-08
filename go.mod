@@ -20,6 +20,7 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.2.0 // indirect
+	gitee.com/chunanyong/dm v1.8.12 // indirect
 	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/ClickHouse/clickhouse-go/v2 v2.0.15 // indirect
 	github.com/VictoriaMetrics/easyproto v0.1.4 // indirect
@@ -51,6 +52,8 @@ require (
 	github.com/godror/godror v0.50.0 // indirect
 	github.com/godror/knownpb v0.3.0 // indirect
 	github.com/gogf/gf/contrib/drivers/clickhouse/v2 v2.10.0 // indirect
+	github.com/gogf/gf/contrib/drivers/dm/v2 v2.10.0 // indirect
+	github.com/gogf/gf/contrib/drivers/mariadb/v2 v2.10.0 // indirect
 	github.com/gogf/gf/contrib/drivers/mssql/v2 v2.10.0 // indirect
 	github.com/gogf/gf/contrib/drivers/mysql/v2 v2.10.0 // indirect
 	github.com/gogf/gf/contrib/drivers/oracle/v2 v2.10.0 // indirect

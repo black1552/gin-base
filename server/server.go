@@ -13,7 +13,7 @@ import (
 
 	"git.magicany.cc/black1552/gin-base/config"
 	"git.magicany.cc/black1552/gin-base/database"
-	_ "git.magicany.cc/black1552/gin-base/database/drivers" // 自动注册数据库驱动
+	_ "git.magicany.cc/black1552/gin-base/database/drivers" // 自动注册数据库驱动（必须在 database 之前）
 	"git.magicany.cc/black1552/gin-base/log"
 	"git.magicany.cc/black1552/gin-base/middleware"
 	"github.com/gin-gonic/gin"
@@ -41,6 +41,10 @@ func initDatabase() {
 	}
 
 	log.Info("正在初始化数据库连接...")
+
+	// 调试：打印已注册的驱动
+	// database.PrintDrivers() // 如果需要可以添加这个函数
+
 	defer func() {
 		if err := recover(); err != nil {
 			log.Error("数据库初始化失败:", err)
