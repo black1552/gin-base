@@ -31,5 +31,4 @@ var {{.TplTableNameCamelCase}} = map[string]*database.TableField{
 func Set{{.TplTableNameCamelCase}}TableFields(ctx context.Context, db database.DB, schema ...string) error {
 	return db.GetCore().SetTableFields(ctx, "{{.TplTableName}}", {{.TplTableNameCamelCase}}, schema...)
 }
-
 `

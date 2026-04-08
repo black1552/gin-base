@@ -4,39 +4,39 @@
 // If a copy of the MIT was not distributed with this file,
 // You can obtain one at https://github.com/gogf/gf.
 
-// Package pgsql implements database.Driver for PostgreSQL database.
+// Package pgsql implements database.Driver, which supports operations for database PostgreSQL.
 package pgsql
 
 import (
-	"database/sql"
-	"fmt"
-
 	_ "github.com/lib/pq"
 
 	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/gogf/gf/v2/os/gctx"
 )
 
-// Driver is the driver for PostgreSQL database.
+// Driver is the driver for postgresql database.
 type Driver struct {
 	*database.Core
 }
 
 const (
-	quoteChar = `"`
+	internalPrimaryKeyInCtx gctx.StrKey = "primary_key"
+	defaultSchema           string      = "public"
+	quoteChar               string      = `"`
 )
 
 func init() {
-	if err := database.Register("pgsql", New()); err != nil {
+	if err := database.Register(`pgsql`, New()); err != nil {
 		panic(err)
 	}
 }
 
-// New creates and returns a driver that implements database.Driver for PostgreSQL.
+// New create and returns a driver that implements database.Driver, which supports operations for PostgreSql.
 func New() database.Driver {
 	return &Driver{}
 }
 
-// New creates and returns a database object for PostgreSQL.
+// New creates and returns a database object for postgresql.
 // It implements the interface of database.Driver for extra database driver installation.
 func (d *Driver) New(core *database.Core, node *database.ConfigNode) (database.DB, error) {
 	return &Driver{
@@ -44,28 +44,7 @@ func (d *Driver) New(core *database.Core, node *database.ConfigNode) (database.D
 	}, nil
 }
 
-// GetChars returns the security char for PostgreSQL database.
+// GetChars returns the security char for this type of database.
 func (d *Driver) GetChars() (charLeft string, charRight string) {
 	return quoteChar, quoteChar
-}
-
-// Open creates and returns an underlying sql.DB object for PostgreSQL.
-func (d *Driver) Open(config *database.ConfigNode) (*sql.DB, error) {
-	var (
-		source   string
-		username = config.User
-		password = config.Pass
-		host     = config.Host
-		port     = config.Port
-		dbName   = config.Name
-	)
-
-	source = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		host, port, username, password, dbName)
-
-	if config.Extra != "" {
-		source += " " + config.Extra
-	}
-
-	return sql.Open("postgres", source)
 }

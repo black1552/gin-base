@@ -15,6 +15,7 @@ package {{.TplPackageName}}
 
 import (
 	"{{.TplImportPrefix}}/internal"
+	"git.magicany.cc/black1552/gin-base/database"
 )
 
 // {{.TplTableNameCamelLowerCase}}Dao is the data access object for the table {{.TplTableName}}.
@@ -37,16 +38,16 @@ var (
 {{if .TplTableSharding -}}
 // {{.TplTableNameCamelLowerCase}}ShardingHandler is the handler for sharding operations.
 // You can fill this sharding handler with your custom implementation.
-func {{.TplTableNameCamelLowerCase}}ShardingHandler(m *gdb.Model) *gdb.Model {
-	m = m.Sharding(gdb.ShardingConfig{
-		Table:  gdb.ShardingTableConfig{
+func {{.TplTableNameCamelLowerCase}}ShardingHandler(m *database.Model) *database.Model {
+	m = m.Sharding(database.ShardingConfig{
+		Table:  database.ShardingTableConfig{
 			Enable: true,
 			Prefix: "{{.TplTableShardingPrefix}}",
 			// Replace Rule field with your custom sharding rule.
 			// Or you can use "&gdb.DefaultShardingRule{}" for default sharding rule.
 			Rule: nil,
         },
-		Schema: gdb.ShardingSchemaConfig{},
+		Schema: database.ShardingSchemaConfig{},
 	})
 	return m
 }
@@ -65,9 +66,7 @@ package internal
 
 import (
 	"context"
-
-	"github.com/gogf/gf/v2/database/gdb"
-	"github.com/gogf/gf/v2/frame/g"
+	"git.magicany.cc/black1552/gin-base/database"
 )
 
 // {{.TplTableNameCamelCase}}Dao is the data access object for the table {{.TplTableName}}.
@@ -75,7 +74,7 @@ type {{.TplTableNameCamelCase}}Dao struct {
 	table   string          // table is the underlying table name of the DAO.
 	group   string          // group is the database configuration group name of the current DAO.
 	columns {{.TplTableNameCamelCase}}Columns // columns contains all the column names of Table for convenient usage.
-    handlers []gdb.ModelHandler // handlers for customized model modification.
+    handlers []database.ModelHandler // handlers for customized model modification.
 }
 
 // {{.TplTableNameCamelCase}}Columns defines and stores column names for the table {{.TplTableName}}.
@@ -89,7 +88,7 @@ var {{.TplTableNameCamelLowerCase}}Columns = {{.TplTableNameCamelCase}}Columns{
 }
 
 // New{{.TplTableNameCamelCase}}Dao creates and returns a new DAO object for table data access.
-func New{{.TplTableNameCamelCase}}Dao(handlers ...gdb.ModelHandler) *{{.TplTableNameCamelCase}}Dao {
+func New{{.TplTableNameCamelCase}}Dao(handlers ...database.ModelHandler) *{{.TplTableNameCamelCase}}Dao {
 	return &{{.TplTableNameCamelCase}}Dao{
 		group:   "{{.TplGroupName}}",
 		table:   "{{.TplTableName}}",
@@ -99,8 +98,8 @@ func New{{.TplTableNameCamelCase}}Dao(handlers ...gdb.ModelHandler) *{{.TplTable
 }
 
 // DB retrieves and returns the underlying raw database management object of the current DAO.
-func (dao *{{.TplTableNameCamelCase}}Dao) DB() gdb.DB {
-	return g.DB(dao.group)
+func (dao *{{.TplTableNameCamelCase}}Dao) DB() database.DB {
+	return database.Database(dao.group)
 }
 
 // Table returns the table name of the current DAO.
@@ -119,7 +118,7 @@ func (dao *{{.TplTableNameCamelCase}}Dao) Group() string {
 }
 
 // Ctx creates and returns a Model for the current DAO. It automatically sets the context for the current operation.
-func (dao *{{.TplTableNameCamelCase}}Dao) Ctx(ctx context.Context) *gdb.Model {
+func (dao *{{.TplTableNameCamelCase}}Dao) Ctx(ctx context.Context) *database.Model {
 	model := dao.DB().Model(dao.table)
 	for _, handler := range dao.handlers {
 		model = handler(model)
@@ -133,7 +132,7 @@ func (dao *{{.TplTableNameCamelCase}}Dao) Ctx(ctx context.Context) *gdb.Model {
 //
 // Note: Do not commit or roll back the transaction in function f,
 // as it is automatically handled by this function.
-func (dao *{{.TplTableNameCamelCase}}Dao) Transaction(ctx context.Context, f func(ctx context.Context, tx gdb.TX) error) (err error) {
+func (dao *{{.TplTableNameCamelCase}}Dao) Transaction(ctx context.Context, f func(ctx context.Context, tx database.TX) error) (err error) {
 	return dao.Ctx(ctx).Transaction(ctx, f)
 }
 `

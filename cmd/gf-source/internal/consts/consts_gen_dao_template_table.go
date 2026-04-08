@@ -15,20 +15,19 @@ package {{.TplPackageName}}
 
 import (
 	"context"
-
-	"github.com/gogf/gf/v2/database/gdb"
+	"git.magicany.cc/black1552/gin-base/database"
 )
 
 // {{.TplTableNameCamelCase}} defines the fields of table "{{.TplTableName}}" with their properties.
 // This map is used internally by GoFrame ORM to understand table structure.
-var {{.TplTableNameCamelCase}} = map[string]*gdb.TableField{
+var {{.TplTableNameCamelCase}} = map[string]*database.TableField{
 {{.TplTableFields}}
 }
 
 // Set{{.TplTableNameCamelCase}}TableFields registers the table fields definition to the database instance.
 // db: database instance that implements gdb.DB interface.
 // schema: optional schema/namespace name, especially for databases that support schemas.
-func Set{{.TplTableNameCamelCase}}TableFields(ctx context.Context, db gdb.DB, schema ...string) error {
+func Set{{.TplTableNameCamelCase}}TableFields(ctx context.Context, db database.DB, schema ...string) error {
 	return db.GetCore().SetTableFields(ctx, "{{.TplTableName}}", {{.TplTableNameCamelCase}}, schema...)
 }
 

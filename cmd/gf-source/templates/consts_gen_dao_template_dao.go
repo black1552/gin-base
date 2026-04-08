@@ -67,7 +67,6 @@ import (
 	"context"
 
 	"git.magicany.cc/black1552/gin-base/database"
-	"github.com/gogf/gf/v2/frame/g"
 )
 
 // {{.TplTableNameCamelCase}}Dao is the data access object for the table {{.TplTableName}}.
@@ -100,7 +99,7 @@ func New{{.TplTableNameCamelCase}}Dao(handlers ...database.ModelHandler) *{{.Tpl
 
 // DB retrieves and returns the underlying raw database management object of the current DAO.
 func (dao *{{.TplTableNameCamelCase}}Dao) DB() database.DB {
-	return g.DB(dao.group)
+	return database.Database(dao.group)
 }
 
 // Table returns the table name of the current DAO.

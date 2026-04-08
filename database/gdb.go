@@ -687,6 +687,7 @@ type (
 	Result []Record
 
 	// Map is alias of map[string]any, which is the most common usage map type.
+
 	Map = map[string]any
 
 	// List is type of map array.

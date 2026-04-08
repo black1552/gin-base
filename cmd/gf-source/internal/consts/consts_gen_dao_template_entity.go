@@ -8,7 +8,7 @@ package consts
 
 const TemplateGenDaoEntityContent = `
 // =================================================================================
-// Code generated and maintained by GoFrame CLI tool. DO NOT EDIT. {{.TplCreatedAtDatetimeStr}}
+// Code generated and maintained by Gen CLI tool. DO NOT EDIT. {{.TplCreatedAtDatetimeStr}}
 // =================================================================================
 
 package {{.TplPackageName}}

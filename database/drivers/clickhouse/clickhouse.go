@@ -4,58 +4,60 @@
 // If a copy of the MIT was not distributed with this file,
 // You can obtain one at https://github.com/gogf/gf.
 
-// Package clickhouse implements database.Driver for ClickHouse database.
+// Package clickhouse implements database.Driver, which supports operations for database ClickHouse.
 package clickhouse
 
 import (
-	"database/sql"
-	"fmt"
-
-	_ "github.com/ClickHouse/clickhouse-go/v2"
+	"context"
+	"errors"
 
 	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/gogf/gf/v2/os/gctx"
 )
 
-// Driver is the driver for ClickHouse database.
+// Driver is the driver for clickhouse database.
 type Driver struct {
 	*database.Core
 }
 
+var (
+	errUnsupportedInsertIgnore = errors.New("unsupported method:InsertIgnore")
+	errUnsupportedInsertGetId  = errors.New("unsupported method:InsertGetId")
+	errUnsupportedReplace      = errors.New("unsupported method:Replace")
+	errUnsupportedBegin        = errors.New("unsupported method:Begin")
+	errUnsupportedTransaction  = errors.New("unsupported method:Transaction")
+)
+
 const (
-	quoteChar = `"`
+	updateFilterPattern             = `(?i)UPDATE[\s]+?(\w+[\.]?\w+)[\s]+?SET`
+	deleteFilterPattern             = `(?i)DELETE[\s]+?FROM[\s]+?(\w+[\.]?\w+)`
+	filterTypePattern               = `(?i)^UPDATE|DELETE`
+	needParsedSqlInCtx  gctx.StrKey = "NeedParsedSql"
+	driverName                      = "clickhouse"
 )
 
 func init() {
-	if err := database.Register("clickhouse", New()); err != nil {
+	if err := database.Register(`clickhouse`, New()); err != nil {
 		panic(err)
 	}
 }
 
-// New creates and returns a driver that implements database.Driver for ClickHouse.
+// New create and returns a driver that implements database.Driver, which supports operations for clickhouse.
 func New() database.Driver {
 	return &Driver{}
 }
 
-// New creates and returns a database object for ClickHouse.
+// New creates and returns a database object for clickhouse.
+// It implements the interface of database.Driver for extra database driver installation.
 func (d *Driver) New(core *database.Core, node *database.ConfigNode) (database.DB, error) {
 	return &Driver{
 		Core: core,
 	}, nil
 }
 
-// GetChars returns the security char for ClickHouse.
-func (d *Driver) GetChars() (charLeft string, charRight string) {
-	return quoteChar, quoteChar
-}
-
-// Open creates and returns an underlying sql.DB object for ClickHouse.
-func (d *Driver) Open(config *database.ConfigNode) (*sql.DB, error) {
-	var source string
-	if config.Link != "" {
-		source = config.Link
-	} else {
-		source = fmt.Sprintf("clickhouse://%s:%s@%s:%s/%s",
-			config.User, config.Pass, config.Host, config.Port, config.Name)
+func (d *Driver) injectNeedParsedSql(ctx context.Context) context.Context {
+	if ctx.Value(needParsedSqlInCtx) != nil {
+		return ctx
 	}
-	return sql.Open("clickhouse", source)
+	return context.WithValue(ctx, needParsedSqlInCtx, true)
 }

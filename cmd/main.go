@@ -53,14 +53,34 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 获取数据库实例
-	db := database.Database()
+	// 获取数据库实例（使用 default 组）
+	db := database.Database("default")
+
+	// 调试信息：打印当前使用的数据库名称
+	config := db.GetConfig()
+	if config != nil {
+		fmt.Printf("🔍 调试: 当前数据库名 = %s, 类型 = %s\n", config.Name, config.Type)
+	}
 
 	// 获取所有表
 	tables, err := db.Tables(ctx)
 	if err != nil {
 		fmt.Printf("❌ 获取表列表失败: %v\n", err)
 		os.Exit(1)
+	}
+
+	// 如果没找到表，尝试直接查询验证
+	if len(tables) == 0 {
+		fmt.Println("⚠️  警告: 未找到任何表，尝试直接查询...")
+		result, err := db.Query(ctx, "SHOW TABLES")
+		if err != nil {
+			fmt.Printf("❌ 直接查询失败: %v\n", err)
+		} else {
+			fmt.Printf("🔍 直接查询结果: %d 行\n", len(result))
+			for _, row := range result {
+				fmt.Printf("   - %v\n", row)
+			}
+		}
 	}
 
 	fmt.Printf("📋 找到 %d 个表:\n", len(tables))
@@ -104,7 +124,13 @@ func main() {
 		fields, err := db.TableFields(ctx, tableName)
 		if err != nil {
 			fmt.Printf("   ⚠️  获取表字段失败: %v\n", err)
-			continue
+			return // 使用 return 而不是 continue
+		}
+
+		// 调试：打印字段信息
+		fmt.Printf("   🔍 调试: 找到 %d 个字段\n", len(fields))
+		for name, field := range fields {
+			fmt.Printf("      - %s: %s (%s)\n", name, field.Type, field.Comment)
 		}
 
 		// 生成 Entity
