@@ -24,7 +24,6 @@ import (
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/os/gctx"
-	"github.com/gogf/gf/v2/os/glog"
 	"github.com/gogf/gf/v2/util/grand"
 	"github.com/gogf/gf/v2/util/gutil"
 )
@@ -965,7 +964,7 @@ func newDBByConfigNode(node *ConfigNode, group string) (db DB, err error) {
 		debug:         gtype.NewBool(),
 		cache:         gcache.New(),
 		links:         gmap.NewKVMapWithChecker[ConfigNode, *sql.DB](linksChecker, true),
-		logger:        glog.New(),
+		logger:        nil, // 日志器将在 database.Database() 中设置
 		config:        node,
 		localTypeMap:  gmap.NewStrAnyMap(true),
 		innerMemCache: gcache.New(),
