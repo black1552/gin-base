@@ -717,12 +717,10 @@ func (c *Core) MarshalJSON() ([]byte, error) {
 
 // writeSqlToLogger outputs the Sql object to logger.
 // It is enabled only if configuration "debug" is true.
-func (c *Core) writeSqlToLogger(ctx context.Context, sql *Sql) {
+func (c *Core) writeSqlToLogger(sql *Sql) {
 	var transactionIdStr string
 	if sql.IsTransaction {
-		if v := ctx.Value(transactionIdForLoggerCtx); v != nil {
-			transactionIdStr = fmt.Sprintf(`[txid:%d] `, v.(uint64))
-		}
+		transactionIdStr = fmt.Sprintf(`[tx] `)
 	}
 	s := fmt.Sprintf(
 		"[%3d ms] [%s] [%s] [rows:%-3d] %s%s",
@@ -730,9 +728,9 @@ func (c *Core) writeSqlToLogger(ctx context.Context, sql *Sql) {
 	)
 	if sql.Error != nil {
 		s += "\nError: " + sql.Error.Error()
-		c.logger.Error(ctx, s)
+		c.logger.Error(s)
 	} else {
-		c.logger.Debug(ctx, s)
+		c.logger.Debug(s)
 	}
 }
 

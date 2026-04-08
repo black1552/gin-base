@@ -307,7 +307,7 @@ func (c *Core) DoCommit(ctx context.Context, in DoCommitInput) (out DoCommitOutp
 
 	// Logging.
 	if c.db.GetDebug() {
-		c.writeSqlToLogger(ctx, sqlObj)
+		c.writeSqlToLogger(sqlObj)
 	}
 	if err != nil && err != sql.ErrNoRows {
 		err = gerror.WrapCode(
