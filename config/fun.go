@@ -54,30 +54,29 @@ func init() {
 	})
 }
 
+func GetConfigPath() string {
+	return configPath
+}
+
 // SetDefault 设置默认配置信息
 func SetDefault() {
 	viper.Set("SERVER.addr", "127.0.0.1:8080")
 	viper.Set("SERVER.mode", "release")
-
-	// 数据库配置 - 支持多种数据库类型
-	viper.Set("DATABASE.type", "sqlite")
-	viper.Set("DATABASE.dns", gfile.Join(gfile.Pwd(), "db", "database.db"))
-	viper.Set("DATABASE.debug", true)
-
-	// 数据库连接池配置
-	viper.Set("DATABASE.maxIdleConns", 10)      // 最大空闲连接数
-	viper.Set("DATABASE.maxOpenConns", 100)     // 最大打开连接数
-	viper.Set("DATABASE.connMaxLifetime", 3600) // 连接最大生命周期（秒）
-
-	// 数据库主从配置（可选）
-	viper.Set("DATABASE.replicas", []string{}) // 从库列表
-	viper.Set("DATABASE.readPolicy", "random") // 读负载均衡策略
-
-	// 时间配置 - 定义时间字段名称和格式
-	viper.Set("DATABASE.timeConfig.createdAt", "created_at")
-	viper.Set("DATABASE.timeConfig.updatedAt", "updated_at")
-	viper.Set("DATABASE.timeConfig.deletedAt", "deleted_at")
-	viper.Set("DATABASE.timeConfig.format", "2006-01-02 15:04:05")
+	viper.Set("DATABASE.default.host", "127.0.0.1")
+	viper.Set("DATABASE.default.port", "3306")
+	viper.Set("DATABASE.default.user", "root")
+	viper.Set("DATABASE.default.pass", "123456")
+	viper.Set("DATABASE.default.name", "test")
+	viper.Set("DATABASE.default.type", "mysql")
+	viper.Set("DATABASE.default.role", "master")
+	viper.Set("DATABASE.default.debug", false)
+	viper.Set("DATABASE.default.prefix", "")
+	viper.Set("DATABASE.default.dryRun", false)
+	viper.Set("DATABASE.default.charset", "utf8")
+	viper.Set("DATABASE.default.timezone", "Local")
+	viper.Set("DATABASE.default.createdAt", "create_time")
+	viper.Set("DATABASE.default.updatedAt", "update_time")
+	viper.Set("DATABASE.default.timeMaintainDisabled", false)
 
 	// JWT 配置
 	viper.Set("JWT.secret", "SET-YOUR-SECRET")
