@@ -1,4 +1,4 @@
-module git.magicany.cc/black1552/gin-base/cmd
+module git.magicany.cc/black1552/gin-base/cmd/gen
 
 go 1.25.0
 
