@@ -13,6 +13,7 @@ import (
 
 	"git.magicany.cc/black1552/gin-base/config"
 	"git.magicany.cc/black1552/gin-base/database"
+	_ "git.magicany.cc/black1552/gin-base/database/drivers" // 自动注册数据库驱动
 	"git.magicany.cc/black1552/gin-base/log"
 	"git.magicany.cc/black1552/gin-base/middleware"
 	"github.com/gin-gonic/gin"
