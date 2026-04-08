@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"git.magicany.cc/black1552/gin-base/config"
+	"git.magicany.cc/black1552/gin-base/database"
 	"git.magicany.cc/black1552/gin-base/log"
 	"git.magicany.cc/black1552/gin-base/middleware"
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,34 @@ func New() *gin.Engine {
 	return g
 }
 
+// initDatabase 初始化数据库连接
+func initDatabase() {
+	// 检查是否配置了数据库
+	dbConfig := config.GetConfigValue("database")
+	if dbConfig.IsEmpty() {
+		log.Warn("未配置数据库，跳过数据库初始化")
+		return
+	}
+
+	log.Info("正在初始化数据库连接...")
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error("数据库初始化失败:", err)
+			return
+		}
+	}()
+
+	// 调用 database 包的 Database 函数进行初始化
+	// 这会自动读取配置、创建连接池、设置日志器等
+	db := database.Database()
+	if db == nil {
+		log.Error("数据库实例创建失败")
+		return
+	}
+
+	log.Info("数据库连接初始化成功")
+}
+
 // Run 启动服务
 // @Param *gin.Engine 路由实例
 // 设置监听挂壁
@@ -44,6 +73,7 @@ func Run(g *gin.Engine) {
 		MaxHeaderBytes:    20 * 1024 * 1024,
 	}
 	go func() {
+		initDatabase()
 		if err := s.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			// 检查是否是端口被占用的错误
 			if strings.Contains(err.Error(), "address already in use") ||
