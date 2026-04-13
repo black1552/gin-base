@@ -44,3 +44,13 @@ func (d *Driver) New(core *database.Core, node *database.ConfigNode) (database.D
 func (d *Driver) GetChars() (charLeft string, charRight string) {
 	return quoteChar, quoteChar
 }
+
+// Migration returns a Migration instance for Oracle database operations.
+func (d *Driver) Migration() *Migration {
+	return NewMigration(d)
+}
+
+// GetMigration returns a Migration instance implementing the Migration interface.
+func (d *Driver) GetMigration() database.Migration {
+	return d.Migration()
+}

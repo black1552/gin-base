@@ -41,16 +41,59 @@ func main() {
 	user := getStringValue(defaultDbConfig, "user", "root")
 	pass := getStringValue(defaultDbConfig, "pass", "")
 	dbType := getStringValue(defaultDbConfig, "type", "mysql")
+	link := getStringValue(defaultDbConfig, "link", "")
 
 	fmt.Println("=== Gin-Base DAO 代码生成工具 ===")
-	fmt.Printf("📊 数据库: %s\n", name)
 	fmt.Printf("🔧 类型: %s\n", dbType)
-	fmt.Printf("🌐 主机: %s:%s\n\n", host, port)
 
 	// 构建数据库连接字符串
-	link := fmt.Sprintf("mysql:%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true&loc=Local",
-		user, pass, host, port, name,
-	)
+	var connectionInfo string
+	if link == "" {
+		// 如果没有配置 link，则根据数据库类型构建
+		switch dbType {
+		case "sqlite":
+			// SQLite 使用配置文件中的 link 或默认路径
+			connectionInfo = fmt.Sprintf("📁 数据库文件: %s", link)
+		case "mysql", "mariadb":
+			link = fmt.Sprintf("mysql:%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true&loc=Local",
+				user, pass, host, port, name,
+			)
+			connectionInfo = fmt.Sprintf("📊 数据库: %s\n🌐 主机: %s:%s", name, host, port)
+		case "pgsql", "postgresql":
+			link = fmt.Sprintf("pgsql:%s:%s@tcp(%s:%s)/%s?sslmode=disable",
+				user, pass, host, port, name,
+			)
+			connectionInfo = fmt.Sprintf("📊 数据库: %s\n🌐 主机: %s:%s", name, host, port)
+		case "mssql":
+			link = fmt.Sprintf("mssql:%s:%s@tcp(%s:%s)/%s",
+				user, pass, host, port, name,
+			)
+			connectionInfo = fmt.Sprintf("📊 数据库: %s\n🌐 主机: %s:%s", name, host, port)
+		case "oracle":
+			link = fmt.Sprintf("oracle:%s:%s@%s:%s/%s",
+				user, pass, host, port, name,
+			)
+			connectionInfo = fmt.Sprintf("📊 数据库: %s\n🌐 主机: %s:%s", name, host, port)
+		case "clickhouse":
+			link = fmt.Sprintf("clickhouse:%s:%s@tcp(%s:%s)/%s",
+				user, pass, host, port, name,
+			)
+			connectionInfo = fmt.Sprintf("📊 数据库: %s\n🌐 主机: %s:%s", name, host, port)
+		default:
+			fmt.Printf("⚠️  警告: 未知的数据库类型 %s，尝试使用配置的 link\n", dbType)
+			if link == "" {
+				fmt.Println("❌ 错误: 未配置数据库连接信息")
+				os.Exit(1)
+			}
+			connectionInfo = "🔗 使用自定义连接"
+		}
+	} else {
+		// 使用配置文件中直接提供的 link
+		connectionInfo = fmt.Sprintf("🔗 连接: %s", link)
+	}
+
+	fmt.Println(connectionInfo)
+	fmt.Println()
 
 	// 准备表名参数
 	tablesArg := ""

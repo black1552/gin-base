@@ -44,3 +44,8 @@ func (d *DriverDefault) PingMaster() error {
 func (d *DriverDefault) PingSlave() error {
 	return nil
 }
+
+// GetMigration returns a Migration instance. For default driver, it returns nil.
+func (d *DriverDefault) GetMigration() Migration {
+	return nil
+}

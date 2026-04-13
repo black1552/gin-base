@@ -319,6 +319,10 @@ type DB interface {
 	// If no schema is specified, it uses the default schema.
 	Tables(ctx context.Context, schema ...string) (tables []string, err error)
 
+	// HasTable checks if a table exists in the database.
+	// It returns true if the table exists, false otherwise.
+	HasTable(ctx context.Context, table string) (bool, error)
+
 	// TableFields returns detailed information about all fields in the specified table.
 	// The returned map keys are field names and values contain field metadata.
 	TableFields(ctx context.Context, table string, schema ...string) (map[string]*TableField, error)
@@ -345,6 +349,14 @@ type DB interface {
 	// OrderRandomFunction returns the SQL function for random ordering.
 	// The implementation is database-specific (e.g., RAND() for MySQL).
 	OrderRandomFunction() string
+
+	// ===========================================================================
+	// Migration support.
+	// ===========================================================================
+
+	// GetMigration returns a Migration instance for database schema operations.
+	// The returned Migration can be used to create, alter, and drop tables, columns, indexes, etc.
+	GetMigration() Migration
 }
 
 // TX defines the interfaces for ORM transaction operations.

@@ -61,3 +61,13 @@ func (d *Driver) injectNeedParsedSql(ctx context.Context) context.Context {
 	}
 	return context.WithValue(ctx, needParsedSqlInCtx, true)
 }
+
+// Migration returns a Migration instance for ClickHouse database operations.
+func (d *Driver) Migration() *Migration {
+	return NewMigration(d)
+}
+
+// GetMigration returns a Migration instance implementing the Migration interface.
+func (d *Driver) GetMigration() database.Migration {
+	return d.Migration()
+}
