@@ -50,3 +50,9 @@ func (d *Driver) New(core *database.Core, node *database.ConfigNode) (database.D
 func (d *Driver) GetChars() (charLeft string, charRight string) {
 	return quoteChar, quoteChar
 }
+
+// GetMigration returns a Migration instance implementing the Migration interface.
+// Note: sqlitecgo driver does not have migration support yet, returns nil.
+func (d *Driver) GetMigration() database.Migration {
+	return nil
+}

@@ -9,6 +9,8 @@ package database
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"time"
@@ -44,6 +46,13 @@ func (am *AutoMigrateCore) migrateEntity(ctx context.Context, entity any) error 
 
 	if len(columns) == 0 {
 		return fmt.Errorf("no columns found for table %s", tableName)
+	}
+
+	// For SQLite, ensure the database file directory exists
+	if am.db.GetConfig().Type == "sqlite" {
+		if err := am.ensureSQLiteDirectory(); err != nil {
+			return fmt.Errorf("failed to prepare SQLite database: %w", err)
+		}
 	}
 
 	// Check if table exists
@@ -449,4 +458,42 @@ func IsZeroValue(v any) bool {
 		return rv.IsNil()
 	}
 	return false
+}
+
+// ensureSQLiteDirectory ensures the SQLite database file directory exists.
+func (am *AutoMigrateCore) ensureSQLiteDirectory() error {
+	config := am.db.GetConfig()
+	if config.Type != "sqlite" {
+		return nil
+	}
+
+	// Get the database file path from config.Name or config.Link
+	dbPath := config.Name
+	if dbPath == "" && config.Link != "" {
+		// Parse link format: sqlite::@file(./data/company.db)
+		if strings.Contains(config.Link, "@file(") {
+			start := strings.Index(config.Link, "@file(") + 6
+			end := strings.Index(config.Link[start:], ")")
+			if end > 0 {
+				dbPath = config.Link[start : start+end]
+			}
+		}
+	}
+
+	if dbPath == "" {
+		return fmt.Errorf("SQLite database path is empty")
+	}
+
+	// Get directory path
+	dir := filepath.Dir(dbPath)
+
+	// Check if directory exists
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		// Create directory with all parents
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return fmt.Errorf("failed to create directory %s: %w", dir, err)
+		}
+	}
+
+	return nil
 }
