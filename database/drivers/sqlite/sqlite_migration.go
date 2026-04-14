@@ -52,14 +52,16 @@ func (m *Migration) CreateTable(ctx context.Context, table string, columns map[s
 	var primaryKeys []string
 	for name, def := range columns {
 		colDef := m.buildColumnDefinition(name, def)
-		if def.PrimaryKey {
+		// Only add to primaryKeys if it's not an auto-increment column
+		// (auto-increment columns already have PRIMARY KEY in their definition)
+		if def.PrimaryKey && !def.AutoIncrement {
 			primaryKeys = append(primaryKeys, database.QuoteIdentifier(name))
 		}
 		colDefs = append(colDefs, "    "+colDef)
 	}
 
-	// Add primary key constraint if needed
-	if len(primaryKeys) > 0 {
+	// Add composite primary key constraint if needed (for non-auto-increment keys)
+	if len(primaryKeys) > 1 {
 		colDefs = append(colDefs, fmt.Sprintf("    PRIMARY KEY (%s)", strings.Join(primaryKeys, ", ")))
 	}
 
@@ -74,30 +76,27 @@ func (m *Migration) buildColumnDefinition(name string, def *database.ColumnDefin
 	var parts []string
 	parts = append(parts, database.QuoteIdentifier(name))
 
-	// Handle SQLite-specific types
-	dbType := def.Type
-	if def.AutoIncrement && def.PrimaryKey {
-		if dbType == "INT" || dbType == "INTEGER" {
-			dbType = "INTEGER"
-		}
-	}
-	parts = append(parts, dbType)
-
+	// Handle SQLite-specific types for auto-increment primary key
 	if def.PrimaryKey && def.AutoIncrement {
-		parts = append(parts, "PRIMARY KEY AUTOINCREMENT")
-	} else {
-		if !def.Null {
-			parts = append(parts, "NOT NULL")
-		}
+		// SQLite requires INTEGER type for AUTOINCREMENT
+		parts = append(parts, "INTEGER PRIMARY KEY AUTOINCREMENT")
+		return strings.Join(parts, " ")
+	}
 
-		if def.Unique && !def.PrimaryKey {
-			parts = append(parts, "UNIQUE")
-		}
+	// Regular column definition
+	parts = append(parts, def.Type)
 
-		if def.Default != nil {
-			defaultValue := formatDefaultValue(def.Default)
-			parts = append(parts, fmt.Sprintf("DEFAULT %s", defaultValue))
-		}
+	if !def.Null {
+		parts = append(parts, "NOT NULL")
+	}
+
+	if def.Unique && !def.PrimaryKey {
+		parts = append(parts, "UNIQUE")
+	}
+
+	if def.Default != nil {
+		defaultValue := formatDefaultValue(def.Default)
+		parts = append(parts, fmt.Sprintf("DEFAULT %s", defaultValue))
 	}
 
 	return strings.Join(parts, " ")
