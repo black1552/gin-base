@@ -24,7 +24,7 @@ gf-source/
 ## 🔧 主要修改
 
 ### 1. 数据库接口替换
-- ✅ `github.com/gogf/gf/v2/database/gdb` → `git.magicany.cc/black1552/gin-base/database`
+- ✅ `github.com/gogf/gf/v2/database/gdb` → `github.com/black1552/gin-base/database`
 - ✅ `gdb.DB` → `database.DB`
 - ✅ `gdb.ConfigNode` → `database.ConfigNode`
 - ✅ `gdb.AddConfigNode()` → `database.AddConfigNode()`
@@ -32,9 +32,9 @@ gf-source/
 - ✅ `g.DB()` → `database.Database()`
 
 ### 2. 内部包路径修改
-- ✅ `github.com/gogf/gf/cmd/gf/v2/internal/consts` → `git.magicany.cc/black1552/gin-base/cmd/gf-source/internal/consts`
-- ✅ `github.com/gogf/gf/cmd/gf/v2/internal/utility/mlog` → `git.magicany.cc/black1552/gin-base/cmd/gf-source/internal/utility/mlog`
-- ✅ `github.com/gogf/gf/cmd/gf/v2/internal/utility/utils` → `git.magicany.cc/black1552/gin-base/cmd/gf-source/internal/utility/utils`
+- ✅ `github.com/gogf/gf/cmd/gf/v2/internal/consts` → `github.com/black1552/gin-base/cmd/gf-source/internal/consts`
+- ✅ `github.com/gogf/gf/cmd/gf/v2/internal/utility/mlog` → `github.com/black1552/gin-base/cmd/gf-source/internal/utility/mlog`
+- ✅ `github.com/gogf/gf/cmd/gf/v2/internal/utility/utils` → `github.com/black1552/gin-base/cmd/gf-source/internal/utility/utils`
 
 ### 3. 包名统一
 - ✅ 所有 gendao 相关文件统一为 `package gendao`

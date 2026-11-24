@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"git.magicany.cc/black1552/gin-base/database/reflection"
+	"github.com/black1552/gin-base/database/reflection"
 	"github.com/gogf/gf/v2/container/gset"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/errors/gcode"

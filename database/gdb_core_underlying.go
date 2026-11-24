@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"git.magicany.cc/black1552/gin-base/database/intlog"
+	"github.com/black1552/gin-base/database/intlog"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 

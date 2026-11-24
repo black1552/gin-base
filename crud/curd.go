@@ -8,7 +8,7 @@ package crud
 //	"reflect"
 //	"strings"
 //
-//	"git.magicany.cc/black1552/gin-base/orm"
+//	"github.com/black1552/gin-base/orm"
 //)
 //
 //// 定义上下文别名，保持原代码风格

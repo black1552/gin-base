@@ -11,13 +11,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"git.magicany.cc/black1552/gin-base/cmd/consts"
+	"github.com/black1552/gin-base/cmd/consts"
 	"github.com/gogf/gf/v2/os/gfile"
 	"github.com/gogf/gf/v2/os/gview"
 	"github.com/gogf/gf/v2/text/gstr"
 
-	"git.magicany.cc/black1552/gin-base/cmd/gendao/internal/utility/mlog"
-	"git.magicany.cc/black1552/gin-base/cmd/gendao/internal/utility/utils"
+	"github.com/black1552/gin-base/cmd/gendao/internal/utility/mlog"
+	"github.com/black1552/gin-base/cmd/gendao/internal/utility/utils"
 )
 
 func generateEntity(ctx context.Context, in CGenDaoInternalInput) {

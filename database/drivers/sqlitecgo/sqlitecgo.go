@@ -15,7 +15,7 @@ package sqlitecgo
 import (
 	_ "github.com/mattn/go-sqlite3"
 
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 )
 
 // Driver is the driver for sqlite database.

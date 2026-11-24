@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"strings"
 
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 )
 
 // DoInsert inserts or updates data for given table.

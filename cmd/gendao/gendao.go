@@ -17,7 +17,7 @@ import (
 	"github.com/olekukonko/tablewriter/tw"
 	"golang.org/x/mod/modfile"
 
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 	"github.com/gogf/gf/v2/container/garray"
 	"github.com/gogf/gf/v2/container/gset"
 	"github.com/gogf/gf/v2/frame/g"
@@ -28,8 +28,8 @@ import (
 	"github.com/gogf/gf/v2/text/gregex"
 	"github.com/gogf/gf/v2/text/gstr"
 
-	"git.magicany.cc/black1552/gin-base/cmd/gendao/internal/utility/mlog"
-	"git.magicany.cc/black1552/gin-base/cmd/gendao/internal/utility/utils"
+	"github.com/black1552/gin-base/cmd/gendao/internal/utility/mlog"
+	"github.com/black1552/gin-base/cmd/gendao/internal/utility/utils"
 )
 
 type (

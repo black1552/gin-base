@@ -12,7 +12,7 @@ import (
 
 	"github.com/gogf/gf/v2/test/gtest"
 
-	"git.magicany.cc/black1552/gin-base/cmd/gendao/internal/utility/utils"
+	"github.com/black1552/gin-base/cmd/gendao/internal/utility/utils"
 )
 
 func Test_GetModPath(t *testing.T) {

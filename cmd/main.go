@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"git.magicany.cc/black1552/gin-base/cmd/gendao"
-	"git.magicany.cc/black1552/gin-base/config"
-	_ "git.magicany.cc/black1552/gin-base/database/drivers"
+	"github.com/black1552/gin-base/cmd/gendao"
+	"github.com/black1552/gin-base/config"
+	_ "github.com/black1552/gin-base/database/drivers"
 )
 
 func main() {

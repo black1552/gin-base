@@ -10,7 +10,7 @@ import (
 	"context"
 	"database/sql"
 
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 )
 
 // DoDelete does "DELETE FROM ... " statement for the table.

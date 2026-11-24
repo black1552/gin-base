@@ -11,20 +11,20 @@ package drivers
 
 import (
 	// MySQL & MariaDB driver
-	_ "git.magicany.cc/black1552/gin-base/database/drivers/mysql"
+	_ "github.com/black1552/gin-base/database/drivers/mysql"
 
 	// PostgreSQL driver
-	_ "git.magicany.cc/black1552/gin-base/database/drivers/pgsql"
+	_ "github.com/black1552/gin-base/database/drivers/pgsql"
 
 	// SQL Server driver
-	_ "git.magicany.cc/black1552/gin-base/database/drivers/mssql"
+	_ "github.com/black1552/gin-base/database/drivers/mssql"
 
 	// Oracle driver
-	_ "git.magicany.cc/black1552/gin-base/database/drivers/oracle"
+	_ "github.com/black1552/gin-base/database/drivers/oracle"
 
 	// SQLite driver (pure Go implementation, no CGO required)
-	_ "git.magicany.cc/black1552/gin-base/database/drivers/sqlite"
+	_ "github.com/black1552/gin-base/database/drivers/sqlite"
 
 	// ClickHouse driver
-	_ "git.magicany.cc/black1552/gin-base/database/drivers/clickhouse"
+	_ "github.com/black1552/gin-base/database/drivers/clickhouse"
 )

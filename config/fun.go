@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"git.magicany.cc/black1552/gin-base/log"
-	"git.magicany.cc/black1552/gin-base/utils"
+	"github.com/black1552/gin-base/log"
+	"github.com/black1552/gin-base/utils"
 	"github.com/fsnotify/fsnotify"
 	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/os/gfile"

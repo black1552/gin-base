@@ -12,7 +12,7 @@ import (
 
 	gora "github.com/sijms/go-ora/v2"
 
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/util/gconv"

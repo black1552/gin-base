@@ -9,7 +9,7 @@ package database
 import (
 	"time"
 
-	"git.magicany.cc/black1552/gin-base/database/empty"
+	"github.com/black1552/gin-base/database/empty"
 	"github.com/gogf/gf/v2/container/gset"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/text/gregex"

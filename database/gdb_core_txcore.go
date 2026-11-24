@@ -11,7 +11,7 @@ import (
 	"database/sql"
 	"reflect"
 
-	"git.magicany.cc/black1552/gin-base/database/reflection"
+	"github.com/black1552/gin-base/database/reflection"
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/text/gregex"

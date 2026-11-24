@@ -9,7 +9,7 @@ package mysql
 import (
 	"context"
 
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 )
 
 // DoFilter handles the sql before posts it to database.

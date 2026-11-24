@@ -9,7 +9,7 @@ package sqlitecgo
 import (
 	"context"
 
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 )
 
 const (

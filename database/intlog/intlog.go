@@ -14,7 +14,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"git.magicany.cc/black1552/gin-base/database/utils"
+	"github.com/black1552/gin-base/database/utils"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/gogf/gf/v2/debug/gdebug"

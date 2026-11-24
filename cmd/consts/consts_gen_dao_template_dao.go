@@ -15,7 +15,7 @@ package {{.TplPackageName}}
 
 import (
 	"{{.TplImportPrefix}}/internal"
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 )
 
 // {{.TplTableNameCamelLowerCase}}Dao is the data access object for the table {{.TplTableName}}.
@@ -66,7 +66,7 @@ package internal
 
 import (
 	"context"
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 )
 
 // {{.TplTableNameCamelCase}}Dao is the data access object for the table {{.TplTableName}}.

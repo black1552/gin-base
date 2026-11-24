@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"git.magicany.cc/black1552/gin-base/log"
+	"github.com/black1552/gin-base/log"
 	"github.com/gogf/gf/v2/container/garray"
 	"github.com/gogf/gf/v2/os/gfile"
 	"github.com/gogf/gf/v2/text/gstr"

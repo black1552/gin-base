@@ -3,8 +3,8 @@ package middleware
 import (
 	"net/http"
 
-	"git.magicany.cc/black1552/gin-base/log"
-	"git.magicany.cc/black1552/gin-base/response"
+	"github.com/black1552/gin-base/log"
+	"github.com/black1552/gin-base/response"
 	"github.com/gin-gonic/gin"
 )
 

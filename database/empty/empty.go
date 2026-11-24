@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"time"
 
-	"git.magicany.cc/black1552/gin-base/database/reflection"
+	"github.com/black1552/gin-base/database/reflection"
 )
 
 // iString is used for type assert api for String().

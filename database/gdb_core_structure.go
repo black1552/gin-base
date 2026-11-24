@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"git.magicany.cc/black1552/gin-base/database/intlog"
-	"git.magicany.cc/black1552/gin-base/database/json"
+	"github.com/black1552/gin-base/database/intlog"
+	"github.com/black1552/gin-base/database/json"
 	"github.com/gogf/gf/v2/encoding/gbinary"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/os/gtime"

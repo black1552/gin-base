@@ -1,9 +1,9 @@
 package main
 
 import (
-	"git.magicany.cc/black1552/gin-base/config"
-	"git.magicany.cc/black1552/gin-base/log"
-	"git.magicany.cc/black1552/gin-base/server"
+	"github.com/black1552/gin-base/config"
+	"github.com/black1552/gin-base/log"
+	"github.com/black1552/gin-base/server"
 )
 
 // TIP <p>To run your response, right-click the response and select <b>Run</b>.</p> <p>Alternatively, click

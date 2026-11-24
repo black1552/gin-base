@@ -14,15 +14,15 @@ import (
 	"strconv"
 	"strings"
 
-	"git.magicany.cc/black1552/gin-base/cmd/consts"
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/cmd/consts"
+	"github.com/black1552/gin-base/database"
 	"github.com/gogf/gf/v2/os/gfile"
 	"github.com/gogf/gf/v2/os/gview"
 	"github.com/gogf/gf/v2/text/gstr"
 	"github.com/gogf/gf/v2/util/gconv"
 
-	"git.magicany.cc/black1552/gin-base/cmd/gendao/internal/utility/mlog"
-	"git.magicany.cc/black1552/gin-base/cmd/gendao/internal/utility/utils"
+	"github.com/black1552/gin-base/cmd/gendao/internal/utility/mlog"
+	"github.com/black1552/gin-base/cmd/gendao/internal/utility/utils"
 )
 
 // generateTable generates dao files for given tables.

@@ -15,7 +15,7 @@ package {{.TplPackageName}}
 
 import (
 	"context"
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 )
 
 // {{.TplTableNameCamelCase}} defines the fields of table "{{.TplTableName}}" with their properties.

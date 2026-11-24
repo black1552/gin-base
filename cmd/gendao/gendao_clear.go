@@ -10,7 +10,7 @@ import (
 	"github.com/gogf/gf/v2/os/gfile"
 	"github.com/gogf/gf/v2/text/gstr"
 
-	"git.magicany.cc/black1552/gin-base/cmd/gendao/internal/utility/mlog"
+	"github.com/black1552/gin-base/cmd/gendao/internal/utility/mlog"
 )
 
 func doClear(items *CGenDaoInternalGenItems) {

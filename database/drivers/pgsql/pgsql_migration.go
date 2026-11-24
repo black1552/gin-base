@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"strings"
 
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 )
 
 // Migration implements database migration operations for PostgreSQL.

@@ -10,7 +10,7 @@ import (
 	"database/sql"
 	"math"
 
-	"git.magicany.cc/black1552/gin-base/database/empty"
+	"github.com/black1552/gin-base/database/empty"
 	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/util/gconv"

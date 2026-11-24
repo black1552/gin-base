@@ -9,7 +9,7 @@ package sqlite
 import (
 	"context"
 
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 	"github.com/gogf/gf/v2/text/gstr"
 )
 

@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"git.magicany.cc/black1552/gf-common/db"
+	"github.com/black1552/gf-common/db"
 	"gorm.io/gorm"
 )
 

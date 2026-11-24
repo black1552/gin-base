@@ -9,7 +9,7 @@ package utils
 import (
 	"reflect"
 
-	"git.magicany.cc/black1552/gin-base/database/empty"
+	"github.com/black1552/gin-base/database/empty"
 )
 
 // IsNil checks whether `value` is nil, especially for any type value.

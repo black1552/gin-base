@@ -6,7 +6,7 @@
 
 package utils
 
-import "git.magicany.cc/black1552/gin-base/database/command"
+import "github.com/black1552/gin-base/database/command"
 
 const (
 	// Debug key for checking if in debug mode.

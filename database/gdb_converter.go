@@ -9,7 +9,7 @@ package database
 import (
 	"reflect"
 
-	"git.magicany.cc/black1552/gin-base/database/json"
+	"github.com/black1552/gin-base/database/json"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/util/gconv"
 )

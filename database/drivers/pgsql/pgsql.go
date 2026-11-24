@@ -10,7 +10,7 @@ package pgsql
 import (
 	_ "github.com/lib/pq"
 
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 	"github.com/gogf/gf/v2/os/gctx"
 )
 

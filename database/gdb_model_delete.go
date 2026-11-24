@@ -9,7 +9,7 @@ package database
 import (
 	"database/sql"
 
-	"git.magicany.cc/black1552/gin-base/database/intlog"
+	"github.com/black1552/gin-base/database/intlog"
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/text/gstr"

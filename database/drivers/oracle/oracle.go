@@ -8,7 +8,7 @@
 package oracle
 
 import (
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 )
 
 // Driver is the driver for oracle database.

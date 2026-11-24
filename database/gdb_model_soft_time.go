@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"strings"
 
-	"git.magicany.cc/black1552/gin-base/database/intlog"
-	"git.magicany.cc/black1552/gin-base/database/utils"
+	"github.com/black1552/gin-base/database/intlog"
+	"github.com/black1552/gin-base/database/utils"
 	"github.com/gogf/gf/v2/container/garray"
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"

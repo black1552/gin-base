@@ -15,9 +15,9 @@ import (
 	"sort"
 	"strings"
 
-	"git.magicany.cc/black1552/gin-base/database/intlog"
-	"git.magicany.cc/black1552/gin-base/database/reflection"
-	"git.magicany.cc/black1552/gin-base/database/utils"
+	"github.com/black1552/gin-base/database/intlog"
+	"github.com/black1552/gin-base/database/reflection"
+	"github.com/black1552/gin-base/database/utils"
 	"github.com/gogf/gf/v2/container/gmap"
 	"github.com/gogf/gf/v2/container/gset"
 	"github.com/gogf/gf/v2/container/gvar"

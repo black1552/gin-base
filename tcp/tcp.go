@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"git.magicany.cc/black1552/gin-base/pool"
+	"github.com/black1552/gin-base/pool"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtcp"
 	"github.com/gogf/gf/v2/os/glog"

@@ -8,8 +8,8 @@
 package mysql
 
 import (
-	"git.magicany.cc/black1552/gin-base/database"
-	"git.magicany.cc/black1552/gin-base/database/consts"
+	"github.com/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database/consts"
 	_ "github.com/go-sql-driver/mysql"
 )
 

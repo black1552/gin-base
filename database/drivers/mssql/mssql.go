@@ -10,7 +10,7 @@ package mssql
 import (
 	_ "github.com/microsoft/go-mssqldb"
 
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 )
 
 // Driver is the driver for SQL server database.

@@ -14,7 +14,7 @@ import (
 	"database/sql"
 	"time"
 
-	"git.magicany.cc/black1552/gin-base/log"
+	"github.com/black1552/gin-base/log"
 	"github.com/gogf/gf/v2/container/garray"
 	"github.com/gogf/gf/v2/container/gmap"
 	"github.com/gogf/gf/v2/container/gtype"

@@ -11,11 +11,11 @@ import (
 	"syscall"
 	"time"
 
-	"git.magicany.cc/black1552/gin-base/config"
-	"git.magicany.cc/black1552/gin-base/database"
-	_ "git.magicany.cc/black1552/gin-base/database/drivers" // 自动注册数据库驱动（必须在 database 之前）
-	"git.magicany.cc/black1552/gin-base/log"
-	"git.magicany.cc/black1552/gin-base/middleware"
+	"github.com/black1552/gin-base/config"
+	"github.com/black1552/gin-base/database"
+	_ "github.com/black1552/gin-base/database/drivers" // 自动注册数据库驱动（必须在 database 之前）
+	"github.com/black1552/gin-base/log"
+	"github.com/black1552/gin-base/middleware"
 	"github.com/gin-gonic/gin"
 )
 

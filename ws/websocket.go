@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"git.magicany.cc/black1552/gin-base/pool"
+	"github.com/black1552/gin-base/pool"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/gtime"

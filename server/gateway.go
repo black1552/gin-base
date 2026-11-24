@@ -5,7 +5,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 
-	"git.magicany.cc/black1552/gin-base/log"
+	"github.com/black1552/gin-base/log"
 	"github.com/gin-gonic/gin"
 )
 

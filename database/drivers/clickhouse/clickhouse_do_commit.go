@@ -9,7 +9,7 @@ package clickhouse
 import (
 	"context"
 
-	"git.magicany.cc/black1552/gin-base/database"
+	"github.com/black1552/gin-base/database"
 )
 
 // DoCommit commits current sql and arguments to underlying sql driver.

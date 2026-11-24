@@ -11,9 +11,9 @@ import (
 	"fmt"
 	"reflect"
 
-	"git.magicany.cc/black1552/gin-base/database/empty"
-	"git.magicany.cc/black1552/gin-base/database/intlog"
-	"git.magicany.cc/black1552/gin-base/database/reflection"
+	"github.com/black1552/gin-base/database/empty"
+	"github.com/black1552/gin-base/database/intlog"
+	"github.com/black1552/gin-base/database/reflection"
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/text/gstr"

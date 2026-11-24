@@ -11,8 +11,8 @@ import (
 	"github.com/gogf/gf/v2/text/gregex"
 	"github.com/gogf/gf/v2/text/gstr"
 
-	"git.magicany.cc/black1552/gin-base/cmd/gendao/internal/consts"
-	"git.magicany.cc/black1552/gin-base/cmd/gendao/internal/utility/mlog"
+	"github.com/black1552/gin-base/cmd/gendao/internal/consts"
+	"github.com/black1552/gin-base/cmd/gendao/internal/utility/mlog"
 )
 
 // GoFmt formats the source file and adds or removes import statements as necessary.

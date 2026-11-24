@@ -10,7 +10,7 @@ import (
 	"context"
 	"time"
 
-	"git.magicany.cc/black1552/gin-base/database/intlog"
+	"github.com/black1552/gin-base/database/intlog"
 )
 
 // CacheOption is options for model cache control in query.
