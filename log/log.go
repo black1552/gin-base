@@ -12,8 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gogf/gf/v2/os/gfile"
-	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/olekukonko/errors"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
@@ -69,14 +68,49 @@ var (
 	initMu sync.Mutex // 用于保护初始化过程的互斥锁
 )
 
+// DirNames 返回给定目录 `path` 的子文件名。// 注意返回的名称不是绝对路径。
+func DirNames(path string) ([]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		err = errors.Wrapf(err, `os.Open failed for name "%s"`, path)
+	}
+	if err != nil {
+		return nil, err
+	}
+	list, err := f.Readdirnames(-1)
+	_ = f.Close()
+	if err != nil {
+		err = errors.Wrapf(err, `Read dir files failed from path "%s"`, path)
+		return nil, err
+	}
+	return list, nil
+}
+
+// IsDir 检查给定的 `path` 是否为目录。// 注意，如果 `path` 不存在，它会返回 false。
+func IsDir(path string) bool {
+	s, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	return s.IsDir()
+}
+
+// Exists checks whether given `path` exist.
+func Exists(path string) bool {
+	if stat, err := os.Stat(path); stat != nil && !os.IsNotExist(err) {
+		return true
+	}
+	return false
+}
+
 // cleanOldLogs 删除指定天数之前的日志文件（包括主文件和备份文件）
 func cleanOldLogs(days int) {
-	if !gfile.Exists(logs.logPath) {
+	if !Exists(logs.logPath) {
 		return
 	}
 
 	// 获取所有日志文件
-	files, err := gfile.DirNames(logs.logPath)
+	files, err := DirNames(logs.logPath)
 	if err != nil {
 		return
 	}
@@ -84,7 +118,7 @@ func cleanOldLogs(days int) {
 	now := time.Now()
 	for _, file := range files {
 		path := filepath.Join(logs.logPath, file)
-		if gfile.IsDir(path) {
+		if IsDir(path) {
 			continue
 		}
 
@@ -131,13 +165,22 @@ func cleanOldLogs(days int) {
 	}
 }
 
+// Pwd 返回当前工作目录的绝对路径。// 注意，如果获取当前工作目录失败，它将返回空字符串。
+func Pwd() string {
+	path, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	return path
+}
+
 // checkAndRotateLogFile 检查是否需要切换日志文件（跨天时）
 func checkAndRotateLogFile() {
-	date := gtime.Date()
+	date := Date()
 	if logs.currentDate != date {
 		// 日期变化，需要重新初始化
 		logs.currentDate = date
-		logs.filePath = gfile.Join(logs.logPath, fmt.Sprintf("log-%s.log", logs.currentDate))
+		logs.filePath = filepath.Join(logs.logPath, fmt.Sprintf("log-%s.log", logs.currentDate))
 		logs.fileLogger = &lumberjack.Logger{
 			Filename:   logs.filePath,
 			MaxSize:    2,     // 单个文件最大 10MB
@@ -157,6 +200,11 @@ func checkAndRotateLogFile() {
 	}
 }
 
+// Date 返回当前日期，格式为字符串，例如 "2006-01-02"。
+func Date() string {
+	return time.Now().Format("2006-01-02")
+}
+
 func Init() {
 	// 如果已经初始化，检查是否需要切换文件
 	if logs != nil && logs.sysLog != nil {
@@ -174,9 +222,9 @@ func Init() {
 	}
 
 	// 初始化日志器
-	currentDate := gtime.Date()
-	logPath := gfile.Join(gfile.Pwd(), "logs")
-	filePath := gfile.Join(logPath, fmt.Sprintf("log-%s.log", currentDate))
+	currentDate := Date()
+	logPath := filepath.Join(Pwd(), "logs")
+	filePath := filepath.Join(logPath, fmt.Sprintf("log-%s.log", currentDate))
 
 	// 创建 lumberjack 日志文件处理器
 	fileLogger := &lumberjack.Logger{
